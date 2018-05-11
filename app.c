@@ -1,17 +1,22 @@
 #include <stdio.h>
 #include "color_test.c"
 #include <stdlib.h>
+/*#include <ncurses.h>*/
 #include <time.h>
 
-#define LINHAS 5
-#define COLUNAS 10
+#define LINHAS 5 //10
+#define COLUNAS 10 //135
 
 void mover(char map[LINHAS][COLUNAS]){
     char move;
     int i, j;
     int x, y;
-    scanf("%c", &move);
-    //mover para cima//
+    /*set not enter(only on unix)*/
+    system ("/bin/stty raw");
+
+    move = getchar();
+    /*scanf("%c", &move);*/
+    /*mover para cima*/
     if (move == 'w'){
         for(i=0;i<LINHAS;i++){
             for(j=0;j<COLUNAS;j++){
@@ -22,7 +27,7 @@ void mover(char map[LINHAS][COLUNAS]){
                 
             }
         }
-        if((y-1)<0){
+        if((y-1)<1){
             map[y][x] = 'C';
         }
         else{
@@ -30,7 +35,7 @@ void mover(char map[LINHAS][COLUNAS]){
             map[y-1][x] = 'C';
         }
     }
-    //mover para baixo//
+    /*mover para baixo*/
     if (move == 's'){
         for(i=0;i<LINHAS;i++){
             for(j=0;j<COLUNAS;j++){
@@ -40,8 +45,8 @@ void mover(char map[LINHAS][COLUNAS]){
                 }
                 
             }
-        }//delimitar tamanho de novo dps//
-        if((y+1)>4){
+        }/*delimitar tamanho de novo dps*/
+        if((y+1)>3){
             map[y][x] = 'C';
         }
         else{
@@ -49,7 +54,7 @@ void mover(char map[LINHAS][COLUNAS]){
             map[y+1][x] = 'C';
         }
     }
-    //mover para direita//
+    /*mover para direita*/
     if (move == 'd'){
         for(i=0;i<LINHAS;i++){
             for(j=0;j<COLUNAS;j++){
@@ -59,8 +64,8 @@ void mover(char map[LINHAS][COLUNAS]){
                 }
                 
             }
-        }//delimitar tamanho de novo dps//
-        if((x+1)> 9){
+        }/*delimitar tamanho de novo dps*/
+        if((x+1)> 8){
             map[y][x] = 'C';
         }
         else{
@@ -78,21 +83,31 @@ void mover(char map[LINHAS][COLUNAS]){
                 
             }
         }
-        if((x-1)<0){
+        if((x-1)<1){
             map[y][x] = 'C';
         }
         else{
             map[y][x] = '.';
             map[y][x-1] = 'C';
         }
-    }
+    }/*set enter again (only on unix)*/
+    system ("/bin/stty cooked");
 }
-
+/*printar o mapa do jogo com as modificacoes*/
 void printar(char map[LINHAS][COLUNAS]){
     int i,j;
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
-            printf("%c",map[i][j]);
+            if(map[i][j] == 'C'){
+                printf(ANSI_COLOR_RED ANSI_COLOR_BK_RED "%c" ANSI_COLOR_RESET, map[i][j]);
+            }
+            /*Arrumar tamanho do vetor*/
+            else if(i==0 || j==0 || i==9 || j==9 || i ==4){
+                printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                /*printf("%c",map[i][j]);*/
+            }else {
+                printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);
+            }
         }
         printf("\n");
     }
@@ -101,16 +116,13 @@ void printar(char map[LINHAS][COLUNAS]){
 
 int main(){
     clock_t before = clock();
-    int i=0, j=0;
     int jogo = 1;
-    int cont = 0;
     int msec = 0, trigger = 250;
-
 
     char map[LINHAS][COLUNAS] = {
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'C', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
+        {'.', 'C', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         

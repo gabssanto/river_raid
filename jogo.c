@@ -6,6 +6,16 @@
 #define LINHAS 10
 #define COLUNAS 135
 
+void enemies(char map[LINHAS][COLUNAS]){
+    int i, j=133,random;
+    random = rand() % 8 + 1;
+    for(i=1;i<LINHAS;i++){
+       if(map[random][j] == '.'/*  && j<134 */){
+           map[random][j] = 'X'; 
+       }
+    }
+}
+
 void mover(char map[LINHAS][COLUNAS]){
     char move;
     int i, j;
@@ -34,7 +44,7 @@ void mover(char map[LINHAS][COLUNAS]){
             map[y-1][x] = 'C';
         }
     }
-    //mover para baixo//
+    /*mover para baixo*/
     if (move == 's'){
         for(i=0;i<LINHAS;i++){
             for(j=0;j<COLUNAS;j++){
@@ -44,7 +54,7 @@ void mover(char map[LINHAS][COLUNAS]){
                 }
                 
             }
-        }//delimitar tamanho de novo dps//
+        }/*delimitar tamanho de novo dps*/
         if((y+1)>8){
             map[y][x] = 'C';
         }
@@ -53,7 +63,7 @@ void mover(char map[LINHAS][COLUNAS]){
             map[y+1][x] = 'C';
         }
     }
-    //mover para direita//
+    /*mover para direita*/
     if (move == 'd'){
         for(i=0;i<LINHAS;i++){
             for(j=0;j<COLUNAS;j++){
@@ -63,7 +73,7 @@ void mover(char map[LINHAS][COLUNAS]){
                 }
                 
             }
-        }//delimitar tamanho de novo dps//
+        }/*delimitar tamanho de novo dps*/
         if((x+1)> 134){
             map[y][x] = 'C';
         }
@@ -72,6 +82,7 @@ void mover(char map[LINHAS][COLUNAS]){
             map[y][x+1] = 'C';
         }
     }
+    /* mover para esquerda */
     if (move == 'a'){
         for(i=0;i<LINHAS;i++){
             for(j=0;j<COLUNAS;j++){
@@ -95,17 +106,41 @@ void mover(char map[LINHAS][COLUNAS]){
 
 void printar(char map[LINHAS][COLUNAS]){
     int i,j;
-
+    int x,y;
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
             if(map[i][j] == 'C'){
-                printf(ANSI_COLOR_RED ANSI_COLOR_BK_RED "%c" ANSI_COLOR_RESET, map[i][j]);
+                printf(/*ANSI_COLOR_RED ANSI_COLOR_BK_RED*/ "%c" ANSI_COLOR_RESET, map[i][j]);
             }
             if(map[i][j] == '='){
-                printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_GREEN "%c" ANSI_COLOR_RESET, map[i][j]);
+                printf(/*ANSI_COLOR_GREEN ANSI_COLOR_BK_GREEN*/ "%c" ANSI_COLOR_RESET, map[i][j]);
             }
             if(map[i][j] == '.'){
-                printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);
+                if(j == 134){
+                    enemies(map);
+                }else{
+                    printf(/*ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE*/ "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+            }
+            if(map[i][j] == 'X'){
+                x = j;
+                y = i;
+               map[y][x] = '.';
+               map[y][x-1] = 'X';
+               
+               if(x < 0 || x > COLUNAS){
+                   map[y][x-1] = map[y][x];
+               } 
+               printf("%c", map[y][x]);
+               printf("%c", map[y][x-1]);
+               /* if(map[y][x] == '.'){          
+                    printf("%c", map[i][j]);
+                }
+                
+
+                /*else{
+                    printf("%c", map[i][j]);
+                }*/
             }
             /*printf("%c",map[i][j]);*/
         }
@@ -121,6 +156,7 @@ int main(){
     int cont = 0;
     int msec = 0, trigger = 250;
 
+    srand(time(NULL));
 
     char map[LINHAS][COLUNAS] = {
        

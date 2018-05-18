@@ -2,21 +2,56 @@
 #include "color_test.c"
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+#include <termios.h>
+#include <fcntl.h>
 
 #define LINHAS 10
 #define COLUNAS 135
 
-void moverinimigo(char map[LINHAS][COLUNAS]){
-    int i, j=134,random;
+void movertiro(char map[LINHAS][COLUNAS]){
+    
+}
+
+void moverfuel(char map[LINHAS][COLUNAS]){
+    int i, j=134,random, randomspawn;
     int x,y;
+
     random = rand() % 8 + 1;
-    if(map[random][134] == '.'){
-       map[random][134] = 'X'; 
-       }
+    randomspawn = rand()%100 + 1;
+
+    if(map[random][134] == '.' && randomspawn >= 70 && randomspawn < 100){
+       map[random][134] = 'F'; 
+    }
     for(i=1;i<LINHAS;i++){
         for(j=1;j<COLUNAS;j++){
-       
-       if(map[i][j] == 'X'){
+            if(map[i][j] == 'F'){
+                x = j;
+                y = i;
+               map[y][x] = '.';
+               map[y][x-1] = 'F';
+               
+               if(x < 0 || x > COLUNAS){
+                   map[y][x-1] = map[y][x];
+                } 
+            }
+        }
+    } 
+}
+
+void moverinimigo(char map[LINHAS][COLUNAS]){
+    int i, j=134,random, randomspawn;
+    int x,y;
+
+    random = rand() % 8 + 1;
+    randomspawn = rand()%100 + 1;
+
+    if(map[random][134] == '.' && randomspawn >= 70 && randomspawn < 100){
+       map[random][134] = 'X'; 
+    }
+    for(i=1;i<LINHAS;i++){
+        for(j=1;j<COLUNAS;j++){
+            if(map[i][j] == 'X'){
                 x = j;
                 y = i;
                map[y][x] = '.';
@@ -24,107 +59,105 @@ void moverinimigo(char map[LINHAS][COLUNAS]){
                
                if(x < 0 || x > COLUNAS){
                    map[y][x-1] = map[y][x];
-               } 
+                } 
             }
         }
-    }
-
-    
+    } 
 }
 
 void mover(char map[LINHAS][COLUNAS]){
     char move;
     int i, j;
     int x, y;
+    if(kbhit() == 1){
+        move = getch();
 
-    system ("/bin/stty raw");
-    move = getchar();
-
-    /*scanf("%c", &move);*/
-    /*mover para cima*/
-    if (move == 'w'){
-        for(i=0;i<LINHAS;i++){
-            for(j=0;j<COLUNAS;j++){
-                if(map[i][j] == '@'){
-                    x = j;
-                    y = i;
-                }
+        /*mover para cima*/
+        if (move == 'w'){
+            for(i=0;i<LINHAS;i++){
+                for(j=0;j<COLUNAS;j++){
+                    if(map[i][j] == '@'){
+                        x = j;
+                        y = i;
+                    }
                 
+                }
+            }
+            if((y-1)<1){
+                map[y][x] = '@';
+            }
+            else{
+                map[y][x] = '.';
+                map[y-1][x] = '@';
+            }
+        }   
+        /*mover para baixo*/
+        if (move == 's'){
+            for(i=0;i<LINHAS;i++){
+                for(j=0;j<COLUNAS;j++){
+                    if(map[i][j] == '@'){
+                        x = j;
+                        y = i;
+                    }
+                
+                }
+            }
+            /*delimitar tamanho de novo dps*/
+            if((y+1)>8){
+                map[y][x] = '@';
+            }
+            else{
+                map[y][x] = '.';
+                map[y+1][x] = '@';
             }
         }
-        if((y-1)<1){
-            map[y][x] = '@';
+
+        /*mover para direita*/
+        if (move == 'd'){
+            for(i=0;i<LINHAS;i++){
+                for(j=0;j<COLUNAS;j++){
+                    if(map[i][j] == '@'){
+                        x = j;
+                        y = i;
+                    }
+                
+                }
+            }
+            if((x+1)> 134){
+                map[y][x] = '@';
+            }
+            else{
+                map[y][x] = '.';
+                map[y][x+1] = '@';
+            }
         }
-        else{
-            map[y][x] = '.';
-            map[y-1][x] = '@';
+        /*mover para esquerda*/
+        if (move == 'a'){
+            for(i=0;i<LINHAS;i++){
+                for(j=0;j<COLUNAS;j++){
+                    if(map[i][j] == '@'){
+                        x = j;
+                        y = i;
+                    }
+                
+                }
+            }
+            if((x-1)<0){
+                map[y][x] = '@';
+            }
+            else{
+                map[y][x] = '.';
+                map[y][x-1] = '@';
+            }
         }
     }
-    /*mover para baixo*/
-    if (move == 's'){
-        for(i=0;i<LINHAS;i++){
-            for(j=0;j<COLUNAS;j++){
-                if(map[i][j] == '@'){
-                    x = j;
-                    y = i;
-                }
-                
-            }
-        }/*delimitar tamanho de novo dps*/
-        if((y+1)>8){
-            map[y][x] = '@';
-        }
-        else{
-            map[y][x] = '.';
-            map[y+1][x] = '@';
-        }
-    }
-
-    /*mover para direita*/
-    if (move == 'd'){
-        for(i=0;i<LINHAS;i++){
-            for(j=0;j<COLUNAS;j++){
-                if(map[i][j] == '@'){
-                    x = j;
-                    y = i;
-                }
-                
-            }
-        }
-        if((x+1)> 134){
-            map[y][x] = '@';
-        }
-        else{
-            map[y][x] = '.';
-            map[y][x+1] = '@';
-        }
-    }
-    /*mover para esquerda*/
-    if (move == 'a'){
-        for(i=0;i<LINHAS;i++){
-            for(j=0;j<COLUNAS;j++){
-                if(map[i][j] == '@'){
-                    x = j;
-                    y = i;
-                }
-                
-            }
-        }
-        if((x-1)<0){
-            map[y][x] = '@';
-        }
-        else{
-            map[y][x] = '.';
-            map[y][x-1] = '@';
-        }
-}
-    
-    system ("/bin/stty cooked");
+    /* system ("/bin/stty cooked"); */
 }
 
 void printar(char map[LINHAS][COLUNAS]){
     int i,j;
     int x,y;
+    
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
             if(map[i][j] == '@'){
@@ -140,19 +173,10 @@ void printar(char map[LINHAS][COLUNAS]){
                     printf(/*ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE*/ "%c" ANSI_COLOR_RESET, map[i][j]);
                 }
             }
-            /* if(map[i][j] == 'X'){
-                x = j;
-                y = i;
-               map[y][x] = '.';
-               map[y][x-1] = 'X';
-               
-               if(x < 0 || x > COLUNAS){
-                   map[y][x-1] = map[y][x];
-               } 
-               printf("%c", map[y][x-1]);
-               
-            } */
-            if(map[i][j] == 'X'){
+            if(map[i][j] == 'X' && j != 0){
+                printf("%c", map[i][j]);
+            }
+            if(map[i][j] == 'F' && j != 0){
                 printf("%c", map[i][j]);
             }
         }
@@ -162,11 +186,9 @@ void printar(char map[LINHAS][COLUNAS]){
 
 
 int main(){
-    clock_t before = clock();
     int i=0, j=0;
     int jogo = 1;
     int cont = 0;
-    int msec = 0, trigger = 250;
 
     srand(time(NULL));
 
@@ -185,17 +207,14 @@ int main(){
         
     };
     
-while(jogo == 1){
-    do {
-        clock_t difference = clock() - before;
-        msec = difference * 1000 / CLOCKS_PER_SEC;
-    } while ( msec < trigger );
-    msec = 0;
-    system(CLEAR);
-    moverinimigo(map);
-    printar(map);
-    mover(map);
-    before = clock();
- }
+    while(jogo == 1){
+        system(CLEAR);
+        moverinimigo(map);
+        moverfuel(map);
+        movertiro(map);
+        printar(map);
+        mover(map);
+        usleep(50000);
+    }
     return 0;
 }

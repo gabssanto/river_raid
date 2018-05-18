@@ -64,24 +64,3 @@
 #define ANSI_COLOR_WHITE  "\x1B[37m"
 
 #define ANSI_COLOR_RESET   "\x1b[0m"
-
-int colors (int argc, char const *argv[]) {
-
-  printf(ANSI_COLOR_RED     "This text is RED!"     ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_GREEN   "This text is GREEN!"   ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_YELLOW  "This text is YELLOW!"  ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_BLUE    "This text is BLUE!"    ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_MAGENTA "This text is MAGENTA!" ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_CYAN    "This text is CYAN!"    ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_WHITE    "This text is WHITE!"  ANSI_COLOR_RESET "\n");
-
-  printf(ANSI_COLOR_BK_RED     "This text is RED!"     ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_BK_GREEN   "This text is GREEN!"   ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_BK_YELLOW  "This text is YELLOW!"  ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_BK_BLUE    "This text is BLUE!"    ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_BK_MAGENTA "This text is MAGENTA!" ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_BK_CYAN    "This text is CYAN!"    ANSI_COLOR_RESET "\n");
-  printf(ANSI_COLOR_BK_WHITE    "This text is WHITE!"  ANSI_COLOR_RESET "\n");
-
-  return 0;
-}

@@ -35,7 +35,7 @@ aparece um > em baixo da linha se chegar ao final
 int jogo = 1;
 
 
-void combustivel_pontos(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
+void combustivel_pontos(int *printcombustivel, int *pontos){
     /*encerra jogo se o combustivel acabar*/
     int x,y,i,j;
     if (*printcombustivel <= 0){
@@ -47,22 +47,10 @@ void combustivel_pontos(char map[LINHAS][COLUNAS], int *printcombustivel, int *p
         printf(ANSI_COLOR_GREEN"    Pontos = %d\n" ANSI_COLOR_RESET, *pontos);/*printa combustivel*/
         *printcombustivel = *printcombustivel - 1;
         *pontos = *pontos + 1;
-
-        /*pontuacao e combustivel*/
-        for(i=0;i<LINHAS;i++){
-            for(j=COLUNAS;j>=0;j--){
-                if(map[i][j] == '>' && map[i][j+1] == 'X'){
-                    
-                }
-                if(map[i][j] == '>' && map[i][j+1] == 'F' || map[i][j] == '>' && map[i][j+2] == 'F'){
-                    *printcombustivel = *printcombustivel + 40;
-                }
-            }
-        }
     }   
 }
 
-void movertiro(char map[LINHAS][COLUNAS]){
+void movertiro(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
     int x,y,i,j;
     for(i=0;i<LINHAS;i++){
         for(j=COLUNAS;j>=0;j--){
@@ -77,10 +65,12 @@ void movertiro(char map[LINHAS][COLUNAS]){
                     map[y][x+1] = '>';
                 }
                 if(map[y][x+1] == 'F'){
+                    *printcombustivel = *printcombustivel + 40;/*adiciona 40 de combustivel ao destruir 'F'*/
                     map[y][x] = '.';
                     map[y][x+1] = '.';
                 }
                 if(map[y][x+1] == 'X'){
+                    *pontos = *pontos + 50; /* adiciona 50 pontos ao destruir 'X' */
                     map[y][x] = '.';
                     map[y][x+1] = '.';
                 }
@@ -116,6 +106,12 @@ void moverfuel(char map[LINHAS][COLUNAS]){
                 if(map[y][x-1] == '>'){
                     map[y][x] = '.';
                     map[y][x-1] = '.';
+                }
+                /*fazer game over*/
+                if(map[y][x-1] == 'C'){
+                    map[y][x] = '.';
+                    map[y][x-1] = 'F';
+                    jogo = 0;
                 }
                
                /* map[y][x] = '.';
@@ -330,10 +326,10 @@ int main(){
     
     while(jogo == 1){
         system(CLEAR);
-        combustivel_pontos(map, &printcombustivel, &pontos);
+        combustivel_pontos(&printcombustivel, &pontos);
         moverinimigo(map);
         moverfuel(map);
-        movertiro(map);
+        movertiro(map, &printcombustivel, &pontos);
         printar(map);
         mover(map);
         usleep(50000);

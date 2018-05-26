@@ -115,7 +115,7 @@ void corpersonagem(){
     system(CLEAR);
     int escolha;
     printf("Escolha a cor do seu personagem\n");
-    printf("1 - Vermelho ");
+    printf("1 - Vermelho "); 
     printf(ANSI_COLOR_RED     "C"     ANSI_COLOR_RESET "\n");
     printf("2 - Verde ");
     printf(ANSI_COLOR_GREEN   "C"   ANSI_COLOR_RESET "\n");
@@ -130,12 +130,33 @@ void corpersonagem(){
 
     printf("Escolha a opcao para alterar a cor da nave: ");
     scanf("%d", &escolha);
-    while(escolha != 1){
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
     }
     if(escolha == 1){
+        personagemcor = 1;
+        gamemenu();
+    }
+    if(escolha == 2){
+        personagemcor = 2;
+        gamemenu();
+    }
+    if(escolha == 3){
+        personagemcor = 3;
+        gamemenu();
+    }
+    if(escolha == 4){
+        personagemcor = 4;
+        gamemenu();
+    }
+    if(escolha == 5){
+        personagemcor = 5;
+        gamemenu();
+    }
+    if(escolha == 6){
+        personagemcor = 6;
         gamemenu();
     }
 }
@@ -434,7 +455,30 @@ void printar(char map[LINHAS][COLUNAS]){
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
             if(map[i][j] == 'C'){
-                printf(ANSI_COLOR_RED ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                /*alterar cor para vermelho*/
+                if(personagemcor == 1){
+                    printf(ANSI_COLOR_RED ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para verde*/
+                if(personagemcor == 2){
+                    printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para amarelo*/
+                if(personagemcor == 3){
+                    printf(ANSI_COLOR_YELLOW ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para azul*/
+                if(personagemcor == 4){
+                    printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para magenta*/
+                if(personagemcor == 5){
+                    printf(ANSI_COLOR_MAGENTA ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para ciano*/
+                if(personagemcor == 6){
+                    printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
             }
             if(map[i][j] == '='){
                 printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);

@@ -11,49 +11,210 @@ Descricao: Jogo baseado no classico river raid.
 */
 /*
 extras
-graficos
-contador de combustivel
-fazer tiro
 fazer menu
 fazer game over
 */
-/*
-BUGS
-aparece um > em baixo da linha se chegar ao final
-*/
+
 #include <stdio.h>
-#include "color_test.c"
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
 
+#ifdef _WIN32
+        #define CLEAR "cls"
+    #else
+        #define CLEAR "clear"
+#endif
+
+#ifndef _WIN32
+    int kbhit(){
+    struct termios oldt, newt;
+    int ch, oldf;
+    tcgetattr(STDIN_FILENO,&oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+    if(ch != EOF){
+    ungetc(ch,stdin);
+    return 1;
+    }
+    return 0;
+    }
+    int getch(void) {
+    int ch;
+    struct termios oldt;
+    struct termios newt;
+    tcgetattr(STDIN_FILENO,&oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return ch;
+    }
+    #else
+    #include <conio.h>
+#endif
+
 #define LINHAS 10
 #define COLUNAS 135
 
-int jogo = 1;
+#define ANSI_COLOR_BK_RED     "\x1b[41m"
+    #define ANSI_COLOR_BK_GREEN   "\x1b[42m"
+    #define ANSI_COLOR_BK_YELLOW  "\x1b[43m"
+    #define ANSI_COLOR_BK_BLUE    "\x1b[44m"
+    #define ANSI_COLOR_BK_MAGENTA "\x1b[45m"
+    #define ANSI_COLOR_BK_CYAN    "\x1b[46m"
+    #define ANSI_COLOR_BK_WHITE   "\x1b[47m"
+
+    #define ANSI_COLOR_RED     "\x1b[31m"
+    #define ANSI_COLOR_GREEN   "\x1b[32m"
+    #define ANSI_COLOR_YELLOW  "\x1b[33m"
+    #define ANSI_COLOR_BLUE    "\x1b[34m"
+    #define ANSI_COLOR_MAGENTA "\x1b[35m"
+    #define ANSI_COLOR_CYAN    "\x1b[36m"
+    #define ANSI_COLOR_WHITE  "\x1B[37m"
+
+    #define ANSI_COLOR_RESET   "\x1b[0m"
+
+#define LINHAS 10
+#define COLUNAS 135
+
+int jogo = 0;
+int personagemcor = 0;
+/*instrucoes do jogo*/
+void instrucoes(){
+    system(CLEAR);
+    int escolha;
+    printf("Instrucoes :\n");
+    printf("Neste jogo voce deve destruir os inimigos marcados com um X e coletar o combustivel marcado com um F\n");
+    printf("Para mover o personagem voce pode usar:\n");
+    printf("w para mover o personagem para cima\n");
+    printf("s para mover o personagem para baixo\n");
+    printf("d para atirar e destruir o inimigo (X) e destruir o combustivel(F)\n");
+    printf("Digite 1 para voltar ao menu: ");
+    scanf("%d", &escolha);
+    while(escolha != 1){
+        printf("Opcao invalida, ");
+        printf("digite 1 para voltar ao menu: ");
+        scanf("%d", &escolha);
+    }
+    if(escolha == 1){
+        gamemenu();
+    }
+}
+
+void corpersonagem(){
+    system(CLEAR);
+    int escolha;
+    printf("Escolha a cor do seu personagem\n");
+    printf("1 - Vermelho ");
+    printf(ANSI_COLOR_RED     "C"     ANSI_COLOR_RESET "\n");
+    printf("2 - Verde ");
+    printf(ANSI_COLOR_GREEN   "C"   ANSI_COLOR_RESET "\n");
+    printf("3 - Amarelo ");
+    printf(ANSI_COLOR_YELLOW  "C"  ANSI_COLOR_RESET "\n");
+    printf("4 - Azul ");
+    printf(ANSI_COLOR_BLUE    "C"    ANSI_COLOR_RESET "\n");
+    printf("5 - Magenta ");
+    printf(ANSI_COLOR_MAGENTA "C" ANSI_COLOR_RESET "\n");
+    printf("6 - Ciano ");
+    printf(ANSI_COLOR_CYAN    "C"    ANSI_COLOR_RESET "\n");
+
+    printf("Escolha a opcao para alterar a cor da nave: ");
+    scanf("%d", &escolha);
+    while(escolha != 1){
+        printf("Opcao invalida, ");
+        printf("Escolha sua opcao: ");
+        scanf("%d", &escolha);
+    }
+    if(escolha == 1){
+        gamemenu();
+    }
+}
+
+/*configuracoes do jogo*/
+void configuracoes(){
+    system(CLEAR);
+    int escolha;
+    printf("1 - Selecione para alterar a cor da nave\n");
+    printf("Escolha uma opcao: ");
+    scanf("%d", &escolha);
+    while(escolha != 1){
+        printf("Opcao invalida, ");
+        printf("Escolha sua opcao: ");
+        scanf("%d", &escolha);
+    }
+    if(escolha == 1){
+        corpersonagem();
+    }
+}
+
+/*tela de menu do jogo*/
+void gamemenu(){
+    system(CLEAR);
+    int escolha;
+    printf("1 - Jogar\n");
+    printf("2 - Configuracoes\n");
+    printf("3 - Ranking\n");
+    printf("4 - Instrucoes\n");
+    printf("5 - Sair\n");
+    printf("Escolha uma opcao: ");
+    scanf("%d", &escolha);
+
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5){
+        printf("Opcao invalida, escolha novamente\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &escolha);
+    }
+
+    /*comecar jogo*/
+    if(escolha == 1){
+        jogo = 1;
+    }
+    /*implementar dps*/
+    else if(escolha == 2){
+        configuracoes();
+    }
+    /*implementar dps*/
+    else if(escolha == 3){
+
+    }
+    else if(escolha == 4){
+        instrucoes();
+    }
+    else if(escolha == 5){
+        system("exit");
+    }
+}
 
 /*tela de boas vindas ao jogo*/
 void welcome(){
     int i,j;
     char river_raid[LINHAS][COLUNAS] = {
-        {'*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*'},
-        {'*','.','.','_','_','_','_','_','_','_','.','.','_','_','_','.','.','_','_','_','.','.','.','.','.','.','_','_','_','.','_','_','_','_','_','_','_','.','.','.','_','_','_','_','_','_','_','_','.','.','.','.','.','.','.','.','.','.','_','_','_','_','_','_','_','_','.','.','_','_','_','_','_','_','_','_','.','.','_','_','_','.','.','_','_','_','_','_','_','_','_','.','.','.','.','.','*'},
-        {'*','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','\\','|','\\','.','.','\\','.','.','.','.','/','.','.','/','|','\\','.','.','_','_','_','.','\\','.','|','\\','.','.','.','_','_','.','.','\\','.','.','.','.','.','.','.','.','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','\\','|','\\','.','.','.','_','_','_','.','\\','.','.','.','.','*'},
-        {'*','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','.','/','.','.','/','.','|','.','\\','.','.','.','_','_','/','|','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','.','.','.','.','.','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','_','|','\\','.','\\','.','.','.','*'},
-        {'*','.','\\','.','\\','.','.','.','_','.','.','_','\\','.','\\','.','.','\\','.','\\','.','.','\\','/','.','.','/','.','/','.','\\','.','\\','.','.','\\','_','|','/','_','\\','.','\\','.','.','.','_','.','.','_','\\','.','.','.','.','.','.','.','\\','.','\\','.','.','.','_','.','.','_','\\','.','\\','.','.','.','_','_','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','\\','.','\\','.','.','*'},
-        {'*','.','.','\\','.','\\','.','.','\\','\\','.','.','\\','\\','.','\\','.','.','\\','.','\\','.','.','.','.','/','.','/','.','.','.','\\','.','\\','.','.','\\','_','|','\\','.','\\','.','\\','.','.','\\','\\','.','.','\\','|','.','.','.','.','.','.','.','\\','.','\\','.','.','\\','\\','.','.','\\','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','_','\\','\\','.','\\','.','*'},
-        {'*','.','.','.','\\','.','\\','_','_','\\','\\','.','_','\\','\\','.','\\','_','_','\\','.','\\','_','_','/','.','/','.','.','.','.','.','\\','.','\\','_','_','_','_','_','_','_','\\','.','\\','_','_','\\','\\','.','_','\\','.','.','.','.','.','.','.','.','\\','.','\\','_','_','\\','\\','.','_','\\','\\','.','\\','_','_','\\','.','\\','_','_','\\','.','\\','_','_','\\','.','\\','_','_','_','_','_','_','_','\\','*'},
-        {'*','.','.','.','.','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','/','.','.','.','.','.','.','.','\\','|','_','_','_','_','_','_','_','|','\\','|','_','_','|','\\','|','_','_','|','.','.','.','.','.','.','.','.','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','_','_','_','_','_','|','*'},
-        {'*','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','*'},
-        {'*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*'},
+        {'*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*'},
+        {'*','.','.','.','_','_','_','_','_','_','_','.','.','_','_','_','.','.','_','_','_','.','.','.','.','.','.','_','_','_','.','_','_','_','_','_','_','_','.','.','.','_','_','_','_','_','_','_','_','.','.','.','.','.','.','.','.','.','.','_','_','_','_','_','_','_','_','.','.','_','_','_','_','_','_','_','_','.','.','_','_','_','.','.','_','_','_','_','_','_','_','_','.','.','.','.','.','.','*'},
+        {'*','.','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','\\','|','\\','.','.','\\','.','.','.','.','/','.','.','/','|','\\','.','.','_','_','_','.','\\','.','|','\\','.','.','.','_','_','.','.','\\','.','.','.','.','.','.','.','.','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','\\','|','\\','.','.','.','_','_','_','.','\\','.','.','.','.','.','*'},
+        {'*','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','.','/','.','.','/','.','|','.','\\','.','.','.','_','_','/','|','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','.','.','.','.','.','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','_','|','\\','.','\\','.','.','.','.','*'},
+        {'*','.','.','\\','.','\\','.','.','.','_','.','.','_','\\','.','\\','.','.','\\','.','\\','.','.','\\','/','.','.','/','.','/','.','\\','.','\\','.','.','\\','_','|','/','_','\\','.','\\','.','.','.','_','.','.','_','\\','.','.','.','.','.','.','.','\\','.','\\','.','.','.','_','.','.','_','\\','.','\\','.','.','.','_','_','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','\\','.','\\','.','.','.','*'},
+        {'*','.','.','.','\\','.','\\','.','.','\\','\\','.','.','\\','\\','.','\\','.','.','\\','.','\\','.','.','.','.','/','.','/','.','.','.','\\','.','\\','.','.','\\','_','|','\\','.','\\','.','\\','.','.','\\','\\','.','.','\\','|','.','.','.','.','.','.','.','\\','.','\\','.','.','\\','\\','.','.','\\','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','_','\\','\\','.','\\','.','.','*'},
+        {'*','.','.','.','.','\\','.','\\','_','_','\\','\\','.','_','\\','\\','.','\\','_','_','\\','.','\\','_','_','/','.','/','.','.','.','.','.','\\','.','\\','_','_','_','_','_','_','_','\\','.','\\','_','_','\\','\\','.','_','\\','.','.','.','.','.','.','.','.','\\','.','\\','_','_','\\','\\','.','_','\\','\\','.','\\','_','_','\\','.','\\','_','_','\\','.','\\','_','_','\\','.','\\','_','_','_','_','_','_','_','\\','.','*'},
+        {'*','.','.','.','.','.','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','/','.','.','.','.','.','.','.','\\','|','_','_','_','_','_','_','_','|','\\','|','_','_','|','\\','|','_','_','|','.','.','.','.','.','.','.','.','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','_','_','_','_','_','|','.','*'},
+        {'*','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','*'},
+        {'*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*'},
     };
 
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
             if(river_raid[i][j] == '*'){
-                printf(ANSI_COLOR_RED ANSI_COLOR_BK_RED "%c" ANSI_COLOR_RESET, river_raid[i][j]);
+                printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
             else if(river_raid[i][j] == '.'){
                 printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, river_raid[i][j]);
@@ -61,12 +222,13 @@ void welcome(){
             else if(river_raid[i][j] == '_' || river_raid[i][j] == '|' || river_raid[i][j] == '\\' || river_raid[i][j] == '/'){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
-            /* else
-            printf("%c", river_raid[i][j]);  */
         }
+        /*atrasar a atualizacao da tela para parecer antigo */
+        /* usleep(100000); */
         printf("\n");
     }
-    getch();
+    getchar();
+    
 
 }
 
@@ -79,7 +241,7 @@ void combustivel_pontos(int *printcombustivel, int *pontos){
     
     else if (*printcombustivel > 0){
         printf(ANSI_COLOR_RED "Combustivel = %d" ANSI_COLOR_RESET, *printcombustivel);
-        printf(ANSI_COLOR_GREEN"    Pontos = %d\n" ANSI_COLOR_RESET, *pontos);/*printa combustivel*/
+        printf(ANSI_COLOR_GREEN "    Pontos = %d\n" ANSI_COLOR_RESET, *pontos);/*printa combustivel*/
         *printcombustivel = *printcombustivel - 1;
         *pontos = *pontos + 1;
     }   
@@ -151,12 +313,8 @@ void moverfuel(char map[LINHAS][COLUNAS]){
                     map[y][x] = '.';
                     map[y][x-1] = 'F';
                     jogo = 0;
-                }
-               
-               /* map[y][x] = '.';
-               map[y][x-1] = 'F'; */
-               
-               if(x < 0 || x > COLUNAS){
+                }               
+                if(x < 0 || x > COLUNAS){
                    map[y][x-1] = map[y][x];
                 } 
             }
@@ -201,7 +359,7 @@ void moverinimigo(char map[LINHAS][COLUNAS]){
     } 
 }
 
-void mover(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
+void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
     char move;
     int i, j;
     int x, y;
@@ -266,47 +424,7 @@ void mover(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
                 map[y][x] = '.';
             }
         }
-
-        /*mover para direita*/
-       /*  if (move == 'd'){
-            for(i=0;i<LINHAS;i++){
-                for(j=0;j<COLUNAS;j++){
-                    if(map[i][j] == 'C'){
-                        x = j;
-                        y = i;
-                    }
-                
-                }
-            }
-            if((x+1)> 134){
-                map[y][x] = 'C';
-            }
-            else{
-                map[y][x] = '.';
-                map[y][x+1] = 'C';
-            }
-        } */
-        /*mover para esquerda*/
-       /*  if (move == 'a'){
-            for(i=0;i<LINHAS;i++){
-                for(j=0;j<COLUNAS;j++){
-                    if(map[i][j] == 'C'){
-                        x = j;
-                        y = i;
-                    }
-                
-                }
-            }
-            if((x-1)<0){
-                map[y][x] = 'C';
-            }
-            else{
-                map[y][x] = '.';
-                map[y][x-1] = 'C';
-            }
-        } */
     }
-    /* system ("/bin/stty cooked"); */
 }
 
 void printar(char map[LINHAS][COLUNAS]){
@@ -316,10 +434,10 @@ void printar(char map[LINHAS][COLUNAS]){
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
             if(map[i][j] == 'C'){
-                printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_CYAN "%c" ANSI_COLOR_RESET, map[i][j]);
+                printf(ANSI_COLOR_RED ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
             }
             if(map[i][j] == '='){
-                printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_GREEN "%c" ANSI_COLOR_RESET, map[i][j]);
+                printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);
             }
             if(map[i][j] == '.'){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
@@ -367,7 +485,8 @@ int main(){
 
     system(CLEAR);
     welcome();
-
+    system(CLEAR);
+    gamemenu();
     while(jogo == 1){
         system(CLEAR);
         combustivel_pontos(&printcombustivel, &pontos);
@@ -375,7 +494,7 @@ int main(){
         moverfuel(map);
         movertiro(map, &printcombustivel, &pontos);
         printar(map);
-        mover(map, &printcombustivel, &pontos);
+        moverpersonagem(map, &printcombustivel, &pontos);
         usleep(50000);
     }
     if(jogo == 0){

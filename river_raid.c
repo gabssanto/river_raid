@@ -11,7 +11,6 @@ Descricao: Jogo baseado no classico river raid.
 */
 /*
 extras
-fazer menu
 fazer game over
 */
 
@@ -88,17 +87,27 @@ fazer game over
 #define COLUNAS 135
 
 int jogo = 0;
-int personagemcor = 0;
+int personagemcor = 1;
+/*tela de game over*/
+void gameover(int *pontos){
+    system(CLEAR);
+    int i,j;
+    printf("Game over\n");
+    printf("Pontos obtidos = %d\n", *pontos);
+    getchar();
+}
+
 /*instrucoes do jogo*/
 void instrucoes(){
     system(CLEAR);
     int escolha;
     printf("Instrucoes :\n");
-    printf("Neste jogo voce deve destruir os inimigos marcados com um X e coletar o combustivel marcado com um F\n");
-    printf("Para mover o personagem voce pode usar:\n");
-    printf("w para mover o personagem para cima\n");
-    printf("s para mover o personagem para baixo\n");
-    printf("d para atirar e destruir o inimigo (X) e destruir o combustivel(F)\n");
+    printf("|   Neste jogo voce deve destruir os inimigos marcados com um X e coletar o combustivel marcado com um F\n");
+    printf("|   Voce pode mudar a cor do personagem ao entrar nas configuracoes\n");
+    printf("|   Para mover o personagem voce pode usar:\n");
+    printf("|   |   w para mover o personagem para cima\n");
+    printf("|   |   s para mover o personagem para baixo\n");
+    printf("|   |   d para atirar e destruir o inimigo (X) e destruir o combustivel(F)\n");
     printf("Digite 1 para voltar ao menu: ");
     scanf("%d", &escolha);
     while(escolha != 1){
@@ -287,7 +296,6 @@ void movertiro(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
                     map[y][x+1] = '>';
                 }
                 if(map[y][x+1] == 'F'){
-                    *printcombustivel = *printcombustivel + 40;/*adiciona 40 de combustivel ao destruir 'F'*/
                     map[y][x] = '.';
                     map[y][x+1] = '.';
                 }
@@ -302,7 +310,7 @@ void movertiro(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
     }
 }
 
-void moverfuel(char map[LINHAS][COLUNAS]){
+void moverfuel(char map[LINHAS][COLUNAS], int *printcombustivel){
     int i, j=134,random, randomspawn;
     int x,y;
 
@@ -329,11 +337,11 @@ void moverfuel(char map[LINHAS][COLUNAS]){
                     map[y][x] = '.';
                     map[y][x-1] = '.';
                 }
-                /*fazer game over*/
+                /*pegar combustivel*/
                 if(map[y][x-1] == 'C'){
                     map[y][x] = '.';
-                    map[y][x-1] = 'F';
-                    jogo = 0;
+                    map[y][x-1] = 'C';
+                    *printcombustivel = *printcombustivel + 40;
                 }               
                 if(x < 0 || x > COLUNAS){
                    map[y][x-1] = map[y][x];
@@ -535,14 +543,14 @@ int main(){
         system(CLEAR);
         combustivel_pontos(&printcombustivel, &pontos);
         moverinimigo(map);
-        moverfuel(map);
+        moverfuel(map, &printcombustivel);
         movertiro(map, &printcombustivel, &pontos);
         printar(map);
         moverpersonagem(map, &printcombustivel, &pontos);
         usleep(50000);
     }
     if(jogo == 0){
-        getchar();
+        gameover(&pontos);
     }
     return 0;
 }

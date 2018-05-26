@@ -9,10 +9,6 @@ Turma: A
 Versão do compilador:  gcc version 7.2.0
 Descricao: Jogo baseado no classico river raid. 
 */
-/*
-extras
-fazer game over
-*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -81,20 +77,22 @@ fazer game over
     #define ANSI_COLOR_CYAN    "\x1b[36m"
     #define ANSI_COLOR_WHITE  "\x1B[37m"
 
-    #define ANSI_COLOR_RESET   "\x1b[0m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 #define LINHAS 10
 #define COLUNAS 135
 
 int jogo = 0;
 int personagemcor = 1;
+int bordascor = 4;
+
 /*tela de game over*/
 void gameover(int *pontos){
     system(CLEAR);
     int i,j;
     printf("Game over\n");
     printf("Pontos obtidos = %d\n", *pontos);
-    getchar();
+    getch();
 }
 
 /*instrucoes do jogo*/
@@ -120,6 +118,7 @@ void instrucoes(){
     }
 }
 
+/*alterar a cor da nave*/
 void corpersonagem(){
     system(CLEAR);
     int escolha;
@@ -169,21 +168,75 @@ void corpersonagem(){
         gamemenu();
     }
 }
+/*alterar a cor das bordas do mapa*/
+void corbordas(){
+    system(CLEAR);
+    int escolha;
+    printf("Escolha a cor do mapa\n");
+    printf("1 - Vermelho "); 
+    printf(ANSI_COLOR_RED ANSI_COLOR_BK_RED     "C"     ANSI_COLOR_RESET "\n");
+    printf("2 - Verde ");
+    printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_GREEN   "C"   ANSI_COLOR_RESET "\n");
+    printf("3 - Amarelo ");
+    printf(ANSI_COLOR_YELLOW ANSI_COLOR_BK_YELLOW  "C"  ANSI_COLOR_RESET "\n");
+    printf("4 - Azul ");
+    printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE    "C"    ANSI_COLOR_RESET "\n");
+    printf("5 - Magenta ");
+    printf(ANSI_COLOR_MAGENTA ANSI_COLOR_BK_MAGENTA "C" ANSI_COLOR_RESET "\n");
+    printf("6 - Ciano ");
+    printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_CYAN    "C"    ANSI_COLOR_RESET "\n");
+
+    printf("Escolha a opcao para alterar a cor do seu mapa: ");
+    scanf("%d", &escolha);
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6){
+        printf("Opcao invalida, ");
+        printf("Escolha sua opcao: ");
+        scanf("%d", &escolha);
+    }
+    if(escolha == 1){
+        bordascor = 1;
+        gamemenu();
+    }
+    if(escolha == 2){
+        bordascor = 2;
+        gamemenu();
+    }
+    if(escolha == 3){
+        bordascor = 3;
+        gamemenu();
+    }
+    if(escolha == 4){
+        bordascor = 4;
+        gamemenu();
+    }
+    if(escolha == 5){
+        bordascor = 5;
+        gamemenu();
+    }
+    if(escolha == 6){
+        bordascor = 6;
+        gamemenu();
+    }
+}
 
 /*configuracoes do jogo*/
 void configuracoes(){
     system(CLEAR);
     int escolha;
     printf("1 - Selecione para alterar a cor da nave\n");
+    printf("2 - Selecione para alterar a cor do mapa\n");
     printf("Escolha uma opcao: ");
     scanf("%d", &escolha);
-    while(escolha != 1){
+    while(escolha != 1 && escolha != 2){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
     }
     if(escolha == 1){
         corpersonagem();
+    }
+    if(escolha == 2){
+        corbordas();
     }
 }
 
@@ -262,6 +315,7 @@ void welcome(){
 
 }
 
+/*printar combustivel e pontos*/
 void combustivel_pontos(int *printcombustivel, int *pontos){
     /*encerra jogo se o combustivel acabar*/
     int x,y,i,j;
@@ -277,6 +331,7 @@ void combustivel_pontos(int *printcombustivel, int *pontos){
     }   
 }
 
+/*mover tiro*/
 void movertiro(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
     int x,y,i,j;
     for(i=0;i<LINHAS;i++){
@@ -310,6 +365,7 @@ void movertiro(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
     }
 }
 
+/*mover F*/
 void moverfuel(char map[LINHAS][COLUNAS], int *printcombustivel){
     int i, j=134,random, randomspawn;
     int x,y;
@@ -351,6 +407,7 @@ void moverfuel(char map[LINHAS][COLUNAS], int *printcombustivel){
     } 
 }
 
+/*mover X*/
 void moverinimigo(char map[LINHAS][COLUNAS]){
     int i, j=134,random, randomspawn;
     int x,y;
@@ -388,6 +445,7 @@ void moverinimigo(char map[LINHAS][COLUNAS]){
     } 
 }
 
+/*mover C*/
 void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
     char move;
     int i, j;
@@ -456,7 +514,8 @@ void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pont
     }
 }
 
-void printar(char map[LINHAS][COLUNAS]){
+/*printar matriz*/
+void printarmatriz(char map[LINHAS][COLUNAS]){
     int i,j;
     int x,y;
     
@@ -489,8 +548,32 @@ void printar(char map[LINHAS][COLUNAS]){
                 }
             }
             if(map[i][j] == '='){
-                printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);
-            }
+                /*alterar cor para vermelho*/
+                if(bordascor == 1){
+                    printf(ANSI_COLOR_RED ANSI_COLOR_BK_RED "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para verde*/
+                if(bordascor == 2){
+                    printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_GREEN "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para amarelo*/
+                if(bordascor == 3){
+                    printf(ANSI_COLOR_YELLOW ANSI_COLOR_BK_YELLOW "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para azul*/
+                if(bordascor == 4){
+                    printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para magenta*/
+                if(bordascor == 5){
+                    printf(ANSI_COLOR_MAGENTA ANSI_COLOR_BK_MAGENTA "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para ciano*/
+                if(bordascor == 6){
+                    printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_CYAN "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+/*                 printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);
+ */            }
             if(map[i][j] == '.'){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
             }
@@ -545,7 +628,7 @@ int main(){
         moverinimigo(map);
         moverfuel(map, &printcombustivel);
         movertiro(map, &printcombustivel, &pontos);
-        printar(map);
+        printarmatriz(map);
         moverpersonagem(map, &printcombustivel, &pontos);
         usleep(50000);
     }

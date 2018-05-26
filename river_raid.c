@@ -85,6 +85,7 @@ Descricao: Jogo baseado no classico river raid.
 int jogo = 0;
 int personagemcor = 1;
 int bordascor = 4;
+int tirocor = 4;
 
 /*tela de game over*/
 void gameover(int *pontos){
@@ -168,6 +169,57 @@ void corpersonagem(){
         gamemenu();
     }
 }
+
+void cortiros(){system(CLEAR);
+    int escolha;
+    printf("Escolha a cor do seu tiro\n");
+    printf("1 - Vermelho "); 
+    printf(ANSI_COLOR_RED     ">"     ANSI_COLOR_RESET "\n");
+    printf("2 - Verde ");
+    printf(ANSI_COLOR_GREEN    ">"   ANSI_COLOR_RESET "\n");
+    printf("3 - Amarelo ");
+    printf(ANSI_COLOR_YELLOW   ">"  ANSI_COLOR_RESET "\n");
+    printf("4 - Azul ");
+    printf(ANSI_COLOR_BLUE     ">"    ANSI_COLOR_RESET "\n");
+    printf("5 - Magenta ");
+    printf(ANSI_COLOR_MAGENTA  ">" ANSI_COLOR_RESET "\n");
+    printf("6 - Ciano ");
+    printf(ANSI_COLOR_CYAN     ">"    ANSI_COLOR_RESET "\n");
+
+    printf("Escolha a opcao para alterar a cor do seu tiro: ");
+    scanf("%d", &escolha);
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6){
+        printf("Opcao invalida, ");
+        printf("Escolha sua opcao: ");
+        scanf("%d", &escolha);
+    }
+    if(escolha == 1){
+        tirocor = 1;
+        gamemenu();
+    }
+    if(escolha == 2){
+        tirocor = 2;
+        gamemenu();
+    }
+    if(escolha == 3){
+        tirocor = 3;
+        gamemenu();
+    }
+    if(escolha == 4){
+        tirocor = 4;
+        gamemenu();
+    }
+    if(escolha == 5){
+        tirocor = 5;
+        gamemenu();
+    }
+    if(escolha == 6){
+        tirocor = 6;
+        gamemenu();
+    }
+
+}
+
 /*alterar a cor das bordas do mapa*/
 void corbordas(){
     system(CLEAR);
@@ -225,9 +277,10 @@ void configuracoes(){
     int escolha;
     printf("1 - Selecione para alterar a cor da nave\n");
     printf("2 - Selecione para alterar a cor do mapa\n");
+    printf("3 - Selecione para alterar a cor do tiro\n");
     printf("Escolha uma opcao: ");
     scanf("%d", &escolha);
-    while(escolha != 1 && escolha != 2){
+    while(escolha != 1 && escolha != 2 && escolha != 3){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
@@ -237,6 +290,9 @@ void configuracoes(){
     }
     if(escolha == 2){
         corbordas();
+    }
+    if(escolha == 3){
+        cortiros();
     }
 }
 
@@ -572,8 +628,7 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
                 if(bordascor == 6){
                     printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_CYAN "%c" ANSI_COLOR_RESET, map[i][j]);
                 }
-/*                 printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, map[i][j]);
- */            }
+            }
             if(map[i][j] == '.'){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
             }
@@ -584,7 +639,31 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
                 printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
             }
             if(map[i][j] == '>'){
-                printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                /*alterar cor para vermelho*/
+                if(tirocor == 1){
+                    printf(ANSI_COLOR_RED ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para verde*/
+                if(tirocor == 2){
+                    printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para amarelo*/
+                if(tirocor == 3){
+                    printf(ANSI_COLOR_YELLOW ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para azul*/
+                if(tirocor == 4){
+                    printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para magenta*/
+                if(tirocor == 5){
+                    printf(ANSI_COLOR_MAGENTA ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para ciano*/
+                if(tirocor == 6){
+                    printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /* printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]); */
             }
             if(i>=0 && i<=9 && j==134){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);

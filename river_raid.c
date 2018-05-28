@@ -8,22 +8,23 @@ Matricula: 180041835
 Turma: A
 Versão do compilador:  gcc version 7.2.0
 Descricao: Jogo baseado no classico river raid. 
+Metodo de compilacao: gcc -ansi -o 180041835_01 180041835_01.c
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <termios.h>
-#include <fcntl.h>
+    #include <stdlib.h>
+    #include <time.h>
+    #include <unistd.h>
+    #include <termios.h>
+    #include <fcntl.h>
 
-#ifdef _WIN32
+    #ifdef _WIN32
         #define CLEAR "cls"
     #else
         #define CLEAR "clear"
-#endif
+    #endif
 
-#ifndef _WIN32
+    #ifndef _WIN32
     int kbhit(){
     struct termios oldt, newt;
     int ch, oldf;
@@ -56,12 +57,12 @@ Descricao: Jogo baseado no classico river raid.
     }
     #else
     #include <conio.h>
-#endif
+    #endif
 
-#define LINHAS 10
-#define COLUNAS 135
+    #define LINHAS 10
+    #define COLUNAS 135
 
-#define ANSI_COLOR_BK_RED     "\x1b[41m"
+    #define ANSI_COLOR_BK_RED     "\x1b[41m"
     #define ANSI_COLOR_BK_GREEN   "\x1b[42m"
     #define ANSI_COLOR_BK_YELLOW  "\x1b[43m"
     #define ANSI_COLOR_BK_BLUE    "\x1b[44m"
@@ -76,11 +77,14 @@ Descricao: Jogo baseado no classico river raid.
     #define ANSI_COLOR_MAGENTA "\x1b[35m"
     #define ANSI_COLOR_CYAN    "\x1b[36m"
     #define ANSI_COLOR_WHITE  "\x1B[37m"
+    #define ANSI_COLOR_BLACK "\033[22;30m"
+    #define ANSI_COLOR_BK_BLACK "\033[22;40m"
 
-#define ANSI_COLOR_RESET   "\x1b[0m"
+    #define ANSI_COLOR_RESET   "\x1b[0m"
 
-#define LINHAS 10
+    #define LINHAS 10
 #define COLUNAS 135
+
 
 int jogo = 0; /*inicializar o jogo*/
 int personagemcor = 1; /*cor personagem padrao*/
@@ -88,7 +92,7 @@ int bordascor = 4; /*cor das bordas padrao*/
 int tirocor = 4; /*cor do tiro padrao*/
 int configpontos = 0; /*ativa ou desativa ganhar pontos por segundo nas configuracoes*/
 int dificuldade = 1; /*alterar a dificuldade do jogo*/
-int sair;
+int sair; /*definir saida do jogo*/
 
 void jogodificuldade(){
     system(CLEAR);
@@ -177,10 +181,12 @@ void corpersonagem(){
     printf(ANSI_COLOR_MAGENTA "C" ANSI_COLOR_RESET "\n");
     printf("6 - Ciano ");
     printf(ANSI_COLOR_CYAN    "C"    ANSI_COLOR_RESET "\n");
+    printf("7 - Preto ");
+    printf(ANSI_COLOR_BLACK    "C"    ANSI_COLOR_RESET "\n");
 
     printf("Escolha a opcao para alterar a cor da nave: ");
     scanf("%d", &escolha);
-    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6){
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6 && escolha != 7){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
@@ -209,6 +215,10 @@ void corpersonagem(){
         personagemcor = 6;
         gamemenu();
     }
+    if(escolha == 7){
+        personagemcor = 7;
+        gamemenu();
+    }
 }
 
 void cortiros(){
@@ -227,10 +237,12 @@ void cortiros(){
     printf(ANSI_COLOR_MAGENTA  ">" ANSI_COLOR_RESET "\n");
     printf("6 - Ciano ");
     printf(ANSI_COLOR_CYAN     ">"    ANSI_COLOR_RESET "\n");
+    printf("7 - Preto ");
+    printf(ANSI_COLOR_BLACK    ">"    ANSI_COLOR_RESET "\n");
 
     printf("Escolha a opcao para alterar a cor do seu tiro: ");
     scanf("%d", &escolha);
-    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6){
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6 && escolha != 7){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
@@ -259,6 +271,10 @@ void cortiros(){
         tirocor = 6;
         gamemenu();
     }
+    if(escolha == 7){
+        tirocor = 7;
+        gamemenu();
+    }
 
 }
 
@@ -279,10 +295,12 @@ void corbordas(){
     printf(ANSI_COLOR_MAGENTA ANSI_COLOR_BK_MAGENTA "C" ANSI_COLOR_RESET "\n");
     printf("6 - Ciano ");
     printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_CYAN    "C"    ANSI_COLOR_RESET "\n");
+    printf("7 - Preto ");
+    printf(ANSI_COLOR_BLACK ANSI_COLOR_BK_BLACK    "C"    ANSI_COLOR_RESET "\n");
 
     printf("Escolha a opcao para alterar a cor do seu mapa: ");
     scanf("%d", &escolha);
-    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6){
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 && escolha != 6 && escolha != 7){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
@@ -309,6 +327,10 @@ void corbordas(){
     }
     if(escolha == 6){
         bordascor = 6;
+        gamemenu();
+    }
+    if(escolha == 7){
+        bordascor = 7;
         gamemenu();
     }
 }
@@ -408,10 +430,10 @@ void welcome(){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
             else if(river_raid[i][j] == '.'){
-                printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, river_raid[i][j]);
+                printf(ANSI_COLOR_BLACK ANSI_COLOR_BK_BLACK "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
             else if(river_raid[i][j] == '_' || river_raid[i][j] == '|' || river_raid[i][j] == '\\' || river_raid[i][j] == '/'){
-                printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_BLUE "%c" ANSI_COLOR_RESET, river_raid[i][j]);
+                printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_BLACK "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
         }
         /*atrasar a atualizacao da tela para parecer antigo */
@@ -538,17 +560,17 @@ void moverinimigo(char map[LINHAS][COLUNAS]){
     randomspawn = rand()%100 + 1;
     if(dificuldade == 1){
         if(map[random][134] == '.' && randomspawn >= 70 && randomspawn < 100){
-        map[random][j] = 'X'; 
+            map[random][j] = 'X'; 
         }
     }
     if(dificuldade == 2){
         if(map[random][134] == '.' && randomspawn >= 50 && randomspawn < 100){
-        map[random][j] = 'X'; 
+            map[random][j] = 'X'; 
         }
     }
     if(dificuldade == 3){
         if(map[random][134] == '.' && randomspawn >= 30 && randomspawn < 100){
-        map[random][j] = 'X'; 
+            map[random][j] = 'X'; 
         }
     }
     for(i=0;i<LINHAS;i++){
@@ -718,6 +740,10 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
                 if(personagemcor == 6){
                     printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
                 }
+                /*alterar cor para preto*/
+                if(personagemcor == 7){
+                    printf(ANSI_COLOR_BLACK ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
             }
             if(map[i][j] == '='){
                 /*alterar cor para vermelho*/
@@ -743,6 +769,10 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
                 /*alterar cor para ciano*/
                 if(bordascor == 6){
                     printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_CYAN "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
+                /*alterar cor para preto*/
+                if(bordascor == 7){
+                    printf(ANSI_COLOR_BLACK ANSI_COLOR_BK_BLACK "%c" ANSI_COLOR_RESET, map[i][j]);
                 }
             }
             if(map[i][j] == '.'){
@@ -779,6 +809,10 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
                 if(tirocor == 6){
                     printf(ANSI_COLOR_CYAN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
                 }
+                /*alterar cor para preto*/
+                if(tirocor == 7){
+                    printf(ANSI_COLOR_BLACK ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+                }
                 /* printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]); */
             }
             if(j==134){
@@ -804,11 +838,11 @@ int main(){
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
+        {'C', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
         {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'C', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='},
+        {'=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='},
         
     };
 
@@ -828,13 +862,9 @@ int main(){
         if(dificuldade == 1){
             usleep(50000);
         }
-        if(dificuldade == 2){
+        if(dificuldade == 2 || dificuldade == 3){
             usleep(45000);
-        }
-        if(dificuldade == 3){
-            usleep(40000);
-        }
-        
+        }        
     }
     if(jogo == 0 && sair != 5){
         gameover(&pontos, &printcombustivel);

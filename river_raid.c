@@ -100,7 +100,7 @@ void jogodificuldade(){
     printf("Escolha a dificuldade do jogo\n");
     printf("1 - Facil\n"); 
     printf("2 - Medio\n");
-    printf("3 - Dicifil\n");
+    printf("3 - Dificil\n");
 
     printf("Escolha a dificuldade: ");
     scanf("%d", &escolha);
@@ -681,7 +681,7 @@ void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pont
                 }
             }
         
-            if((x-1)>134){
+            if((x-1)<0){
                 map[y][x] = 'C';
             }
             else if(map[y][x] == 'C'){

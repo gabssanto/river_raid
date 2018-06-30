@@ -132,10 +132,12 @@ void gameranking(){
     }
     int ordemscore[size-1];
     char ordemnome[11][100];
+    Player player[size-1];
 
     for(i=0;i<size-1;i++){
         fread(&jogador, sizeof(Player), 1, game);
         ordemscore[i] = jogador.score;
+        player[i] = jogador;
         
     }
 
@@ -144,16 +146,15 @@ void gameranking(){
             if(j+1 == size-1){
                 continue;
             }
-            if(ordemscore[j] < ordemscore[j+1]){
-                int aux = ordemscore[j];
+            if(player[j].score < player[j+1].score){
+                Player aux = player[j];
+                player[j] = player[j+1];
+                player[j+1] = aux;
+                
+                /* int aux = ordemscore[j];
                 ordemscore[j] = ordemscore[j+1];
                 ordemscore[j+1] = aux;
-                j=0;
-                while(j!='\0'){
-                    int aux2 = ordemnome[j][i];
-                    ordemnome[j][i] = ordemnome[j][i+1];
-                    ordemnome[j][i+1] = aux2;
-                }
+                j=0; */
             }
         }
     }
@@ -169,9 +170,9 @@ void gameranking(){
     i=0;
     
     while(i<size-1 && i<10){
-        fread(&jogador, sizeof(Player), 1, game);
+        /* fread(&jogador, sizeof(Player), 1, game); */
         
-        printf("%s ..... %d\n",jogador.nome, ordemscore[i]);   
+        printf("%s ..... %d\n",player[i].nome, player[i].score);   
         i++;
     }
     fclose(game); 
@@ -806,8 +807,17 @@ void moverinimigoO(char map[LINHAS][COLUNAS]){
                     map[y][x-1] = 'O';
                 }
                 if(map[y][x-1] == '>'){
+                    int a1,b1;
                     map[y][x] = ' ';
                     map[y][x-1] = ' ';
+                    for(a1=0;a1<LINHAS;a1++){
+                        for(b1=0;b1<COLUNAS;b1++){
+                            if(map[a1][b1] == 'X'){
+                                map[a1][b1] = ' ';
+                            }
+                        }
+                    }
+                    
                 }
                /*fazer game over*/
                if(map[y][x-1] == 'C'){

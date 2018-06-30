@@ -111,10 +111,10 @@ typedef struct{
 Player jogador;
 
 void gameranking(){
-    int i, escolha;
+    int i,j, escolha;
     int size = 0;
     system(CLEAR);
-
+    //pega o tamanho do ranking
     game = fopen("ranking.bin","rb");
     if (game == NULL){
         printf("Error! opening file");
@@ -125,7 +125,41 @@ void gameranking(){
     }
 
     fclose(game); 
+    //coloca o ranking na ordem correta
+    game = fopen("ranking.bin","rb");
+    if (game == NULL){
+        printf("Error! opening file");
+    }
+    int ordemscore[size-1];
+    char ordemnome[11][100];
 
+    for(i=0;i<size-1;i++){
+        fread(&jogador, sizeof(Player), 1, game);
+        ordemscore[i] = jogador.score;
+        
+    }
+
+    for(i=0;i<size-1;i++){
+        for(j=0;j<size-1;j++){
+            if(j+1 == size-1){
+                continue;
+            }
+            if(ordemscore[j] < ordemscore[j+1]){
+                int aux = ordemscore[j];
+                ordemscore[j] = ordemscore[j+1];
+                ordemscore[j+1] = aux;
+                j=0;
+                while(j!='\0'){
+                    int aux2 = ordemnome[j][i];
+                    ordemnome[j][i] = ordemnome[j][i+1];
+                    ordemnome[j][i+1] = aux2;
+                }
+            }
+        }
+    }
+
+    fclose(game);
+    //printa ranking
     game = fopen("ranking.bin","rb");
     if (game == NULL){
         printf("Error! opening file");
@@ -134,9 +168,11 @@ void gameranking(){
     
     i=0;
     
-    while(i=0;i<size-1;i++){
-        fread(&jogador, sizeof(Player), 1, game); 
-        printf("%s score : %d\n",jogador.nome, jogador.score);   
+    while(i<size-1 && i<10){
+        fread(&jogador, sizeof(Player), 1, game);
+        
+        printf("%s ..... %d\n",jogador.nome, ordemscore[i]);   
+        i++;
     }
     fclose(game); 
     printf("Aperte 1 para voltar ao menu");
@@ -485,7 +521,7 @@ void configuracoes(){
     system(CLEAR);
     int escolha;
     if(ranked_mode == 1){
-        printf("#Modo Ranqueado ativo\n");
+        printf(ANSI_COLOR_RED "#Modo Ranqueado ativo\n" ANSI_COLOR_RESET);
     }
     printf("1 - Tamanho do jogo\n");
     printf("2 - NPC's\n");
@@ -542,7 +578,7 @@ void gamemenu(){
     system(CLEAR);
     int escolha;
     if(ranked_mode == 1){
-        printf("#Modo Ranqueado ativo\n");
+        printf(ANSI_COLOR_RED "#Modo Ranqueado ativo\n" ANSI_COLOR_RESET);
     }
     printf("1 - Jogar\n");
     printf("2 - Configuracoes\n");

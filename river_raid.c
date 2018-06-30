@@ -89,8 +89,10 @@ int probT; //97
 int velocidade; //50000
 
 int nlinhas, ncolunas;
+
 FILE *gridzise;
 FILE *probabilidade;
+FILE *game;
 
 int jogo = 0; /*inicializar o jogo*/
 int personagemcor = 1; /*cor personagem padrao*/
@@ -99,8 +101,38 @@ int tirocor = 4; /*cor do tiro padrao*/
 int configpontos = 0; /*ativa ou desativa ganhar pontos por segundo nas configuracoes*/
 int dificuldade = 1; /*alterar a dificuldade do jogo*/
 int sair; /*definir saida do jogo*/
+int plays = 0;
 
-int ranked_mode = 0;
+int ranked_mode = 0;//setar 0 dps
+
+typedef struct{
+    char nome[11];
+    int score;
+}Player;
+Player jogador;
+
+void gameranking(){
+    int i, escolha;
+    system(CLEAR);
+    game = fopen("ranking.bin","rb");
+    if (game == NULL){
+        printf("Error! opening file");
+    }
+    printf("Ranking do jogo\n");
+    for(i=0;i<10;i++){
+        fread(&jogador, sizeof(Player), 1, game); 
+        printf("%s score : %d\n",jogador.nome, jogador.score);   
+    }
+    fclose(game); 
+    printf("Aperte 1 para voltar ao menu");
+    scanf("%d", &escolha);
+    if(escolha == 1){
+        gamemenu();
+    }
+    
+    getchar();
+    
+}
 
 void probs(){
     system(CLEAR);
@@ -216,14 +248,51 @@ void gameover(int *pontos, int *printcombustivel){
     system(CLEAR);
     int i,j;
     printf("Game over\n");
-    if(*printcombustivel <= 0){
-        printf("Seu combustivel acabou\n");
+
+    if(ranked_mode == 1){
+        int i,size=0;
+        
+        game = fopen("ranking.bin","ab");
+    
+        if (game == NULL){
+        printf("Error! opening file");
+        }
+        printf("Digite seu nome: ");
+        scanf("%s", jogador.nome);
+
+        for(i=0;jogador.nome[i]!='\0';i++){
+            size++;
+        }
+        if(size < 1 || size > 10){
+            printf("Por favor, digite entre 1 e 10 caracteres: ");
+            scanf("%s", jogador.nome);
+        }
+        //scanf("%d", &jogador.score);
+        jogador.score = *pontos;
+        plays++;
+        fwrite(&jogador, sizeof(Player), 1, game); 
+        fclose(game); 
+
+            if(*printcombustivel <= 0){
+                printf("Seu combustivel acabou\n");
+            }
+            else{
+                printf("%s foi atingido pelo inimigo\n", jogador.nome);
+            }
+            printf("%s obteu %d pontos nessa partida\n", jogador.nome,jogador.score);
+        getch();
+
     }
-    else{
-        printf("Voce morreu\n");
+    if(ranked_mode == 0){
+        if(*printcombustivel <= 0){
+            printf("Seu combustivel acabou\n");
+        }
+        else{
+            printf("Você foi atingido pelo inimigo\n");
+        }
+        printf("Você obteu %d pontos nessa partida\n", *pontos);
+        getch();
     }
-    printf("Pontos obtidos = %d\n", *pontos);
-    getch();
 }
 
 /*instrucoes do jogo*/
@@ -516,7 +585,7 @@ void gamemenu(){
     }
     /*implementar dps*/
     else if(escolha == 3){
-        gamemenu();
+        gameranking();
     }
     else if(escolha == 4){
         instrucoes();
@@ -1061,6 +1130,7 @@ int main(){
     welcome();
     system(CLEAR);
     gamemenu();
+    
 
     gridzise = fopen("gridsize.txt", "r");
 

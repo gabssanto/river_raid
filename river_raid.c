@@ -59,9 +59,7 @@ Metodo de compilacao: gcc -ansi -o 180041835_01 180041835_01.c
     #include <conio.h>
     #endif
 
-    #define LINHAS 10
-    #define COLUNAS 135
-
+    
     #define ANSI_COLOR_BK_RED     "\x1b[41m"
     #define ANSI_COLOR_BK_GREEN   "\x1b[42m"
     #define ANSI_COLOR_BK_YELLOW  "\x1b[43m"
@@ -82,9 +80,17 @@ Metodo de compilacao: gcc -ansi -o 180041835_01 180041835_01.c
 
     #define ANSI_COLOR_RESET   "\x1b[0m"
 
-    #define LINHAS 10
-#define COLUNAS 135
+int LINHAS; // = 10;
+int COLUNAS; // = 135;
+int probX; //70
+int probF; //70
+int probO; //99
+int probT; //97
+int velocidade; //50000
 
+int nlinhas, ncolunas;
+FILE *gridzise;
+FILE *probabilidade;
 
 int jogo = 0; /*inicializar o jogo*/
 int personagemcor = 1; /*cor personagem padrao*/
@@ -93,6 +99,89 @@ int tirocor = 4; /*cor do tiro padrao*/
 int configpontos = 0; /*ativa ou desativa ganhar pontos por segundo nas configuracoes*/
 int dificuldade = 1; /*alterar a dificuldade do jogo*/
 int sair; /*definir saida do jogo*/
+
+int ranked_mode = 0;
+
+void probs(){
+    system(CLEAR);
+
+    probabilidade = fopen("probabilidade.txt", "w");
+
+	if(probabilidade == NULL){
+		printf("erro inesperado, nao existe arquivo o probabilidade.txt\n");
+	}
+	printf("Escolha a probabilidade de surgimento do X\n");
+    scanf("%d", &probX);
+	fprintf(probabilidade,"%d\n", probX);
+	
+    printf("Escolha a probabilidade de surgimento do F\n");
+    scanf("%d", &probF);
+	fprintf(probabilidade,"%d\n", probF);
+
+    printf("Escolha a probabilidade de surgimento do O\n");
+    scanf("%d", &probO);
+	fprintf(probabilidade,"%d\n", probO);
+
+    printf("Escolha a probabilidade de surgimento do T\n");
+    scanf("%d", &probT);
+	fprintf(probabilidade,"%d\n", probT);
+
+    printf("Escolha a velocidade do jogo em microssegundos\n");
+    scanf("%d", &velocidade);
+	fprintf(probabilidade,"%d\n", velocidade);
+
+	fclose(probabilidade);
+
+    probabilidade = fopen("probabilidade.txt", "r");
+
+	if(probabilidade == NULL){
+		printf("erro inesperado, nao existe arquivo o probabilidade.txt\n");
+	}
+	fscanf(probabilidade,"%d\n", &probX);
+	fscanf(probabilidade,"%d\n", &probF);
+    fscanf(probabilidade,"%d\n", &probO);
+    fscanf(probabilidade,"%d\n", &probT);
+    fscanf(probabilidade,"%d\n", &velocidade);
+
+	fclose(probabilidade);
+    gamemenu();
+}
+
+void changegridzise(){
+    system(CLEAR);
+    
+    int nLINHAS, nCOLUNAS;
+    int linha, coluna;
+
+	gridzise = fopen("gridsize.txt", "w");
+
+	if(gridzise == NULL){
+		printf("erro inesperado, nao existe arquivo o gridzise.txt\n");
+	}
+	printf("Escolha o numero de linhas e colunas, nessa ordem ");
+    scanf("%d", &nLINHAS);
+    scanf("%d", &nCOLUNAS);
+
+	fprintf(gridzise,"%d\n", nLINHAS);
+	fprintf(gridzise,"%d\n", nCOLUNAS);
+
+	fclose(gridzise);
+
+    gridzise = fopen("gridsize.txt", "r");
+
+	if(gridzise == NULL){
+		printf("erro inesperado, nao existe arquivo o gridzise.txt\n");
+	}
+	fscanf(gridzise,"%d\n", &nlinhas);
+	fscanf(gridzise,"%d\n", &ncolunas);
+	fclose(gridzise);
+
+    LINHAS = nlinhas;
+    COLUNAS = ncolunas;
+
+
+    gamemenu();
+}
 
 void jogodificuldade(){
     system(CLEAR);
@@ -339,33 +428,60 @@ void corbordas(){
 void configuracoes(){
     system(CLEAR);
     int escolha;
-    printf("1 - Selecione para alterar a cor da nave\n");
-    printf("2 - Selecione para alterar a cor da borda do mapa\n");
-    printf("3 - Selecione para alterar a cor do tiro\n");
-    printf("4 - Selecione para ativar a pontuacao por segundo\n");
-    printf("5 - Selecione para alterar a dificuldade\n");
+    if(ranked_mode == 1){
+        printf("#Modo Ranqueado ativo\n");
+    }
+    printf("1 - Tamanho do jogo\n");
+    printf("2 - NPC's\n");
+    printf("3 - Modo ranqueado\n");
+    printf("4 - Selecione para alterar a cor da nave\n");
+    printf("5 - Selecione para alterar a cor da borda do mapa\n");
+    printf("6 - Selecione para alterar a cor do tiro\n");
+    printf("7 - Selecione para ativar a pontuacao por segundo\n");
+    printf("8 - Selecione para alterar a dificuldade\n");
+    printf("9 - Voltar\n");
     printf("Escolha uma opcao: ");
     scanf("%d", &escolha);
-    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5){
+    while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 &&
+          escolha != 6 && escolha != 7 && escolha != 8 && escolha != 9){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
     }
     if(escolha == 1){
-        corpersonagem();
+        changegridzise();
     }
     if(escolha == 2){
-        corbordas();
+        probs();
     }
     if(escolha == 3){
-        cortiros();
+        if(ranked_mode == 0){
+            ranked_mode = 1;
+        }
+        
+       else if(ranked_mode == 1){
+            ranked_mode = 0;
+        }       
+        configuracoes();
     }
     if(escolha == 4){
+        corpersonagem();
+    }
+    if(escolha == 5){
+        corbordas();
+    }
+    if(escolha == 6){
+        cortiros();
+    }
+    if(escolha == 7){
         configpontos = 1;
         gamemenu();
     }
-    if(escolha == 5){
+    if(escolha == 8){
         jogodificuldade();
+    }
+    if(escolha == 9){
+        gamemenu();
     }
 }
 
@@ -373,6 +489,9 @@ void configuracoes(){
 void gamemenu(){
     system(CLEAR);
     int escolha;
+    if(ranked_mode == 1){
+        printf("#Modo Ranqueado ativo\n");
+    }
     printf("1 - Jogar\n");
     printf("2 - Configuracoes\n");
     printf("3 - Ranking\n");
@@ -411,33 +530,32 @@ void gamemenu(){
 /*tela de boas vindas ao jogo*/
 void welcome(){
     int i,j;
-    char river_raid[LINHAS][COLUNAS] = {
+    char river_raid[10][135] = {
         {'*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*'},
-        {'*','.','.','.','_','_','_','_','_','_','_','.','.','_','_','_','.','.','_','_','_','.','.','.','.','.','.','_','_','_','.','_','_','_','_','_','_','_','.','.','.','_','_','_','_','_','_','_','_','.','.','.','.','.','.','.','.','.','.','_','_','_','_','_','_','_','_','.','.','_','_','_','_','_','_','_','_','.','.','_','_','_','.','.','_','_','_','_','_','_','_','_','.','.','.','.','.','.','*'},
-        {'*','.','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','\\','|','\\','.','.','\\','.','.','.','.','/','.','.','/','|','\\','.','.','_','_','_','.','\\','.','|','\\','.','.','.','_','_','.','.','\\','.','.','.','.','.','.','.','.','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','.','_','_','.','.','\\','|','\\','.','.','\\','|','\\','.','.','.','_','_','_','.','\\','.','.','.','.','.','*'},
-        {'*','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','.','/','.','.','/','.','|','.','\\','.','.','.','_','_','/','|','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','.','.','.','.','.','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','|','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','_','|','\\','.','\\','.','.','.','.','*'},
-        {'*','.','.','\\','.','\\','.','.','.','_','.','.','_','\\','.','\\','.','.','\\','.','\\','.','.','\\','/','.','.','/','.','/','.','\\','.','\\','.','.','\\','_','|','/','_','\\','.','\\','.','.','.','_','.','.','_','\\','.','.','.','.','.','.','.','\\','.','\\','.','.','.','_','.','.','_','\\','.','\\','.','.','.','_','_','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','\\','.','\\','.','.','.','*'},
-        {'*','.','.','.','\\','.','\\','.','.','\\','\\','.','.','\\','\\','.','\\','.','.','\\','.','\\','.','.','.','.','/','.','/','.','.','.','\\','.','\\','.','.','\\','_','|','\\','.','\\','.','\\','.','.','\\','\\','.','.','\\','|','.','.','.','.','.','.','.','\\','.','\\','.','.','\\','\\','.','.','\\','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','.','\\','.','.','\\','_','\\','\\','.','\\','.','.','*'},
-        {'*','.','.','.','.','\\','.','\\','_','_','\\','\\','.','_','\\','\\','.','\\','_','_','\\','.','\\','_','_','/','.','/','.','.','.','.','.','\\','.','\\','_','_','_','_','_','_','_','\\','.','\\','_','_','\\','\\','.','_','\\','.','.','.','.','.','.','.','.','\\','.','\\','_','_','\\','\\','.','_','\\','\\','.','\\','_','_','\\','.','\\','_','_','\\','.','\\','_','_','\\','.','\\','_','_','_','_','_','_','_','\\','.','*'},
-        {'*','.','.','.','.','.','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','/','.','.','.','.','.','.','.','\\','|','_','_','_','_','_','_','_','|','\\','|','_','_','|','\\','|','_','_','|','.','.','.','.','.','.','.','.','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','_','_','_','_','_','|','.','*'},
-        {'*','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','.','*'},
+        {'*','#','#','#','_','_','_','_','_','_','_','#','#','_','_','_','#','#','_','_','_','#','#','#','#','#','#','_','_','_','#','_','_','_','_','_','_','_','#','#','#','_','_','_','_','_','_','_','_','#','#','#','#','#','#','#','#','#','#','_','_','_','_','_','_','_','_','#','#','_','_','_','_','_','_','_','_','#','#','_','_','_','#','#','_','_','_','_','_','_','_','_','#','#','#','#','#','#','*'},
+        {'*','#','|','\\','#','#','#','_','_','#','#','\\','|','\\','#','#','\\','|','\\','#','#','\\','#','#','#','#','/','#','#','/','|','\\','#','#','_','_','_','#','\\','#','|','\\','#','#','#','_','_','#','#','\\','#','#','#','#','#','#','#','#','|','\\','#','#','#','_','_','#','#','\\','|','\\','#','#','#','_','_','#','#','\\','|','\\','#','#','\\','|','\\','#','#','#','_','_','_','#','\\','#','#','#','#','#','*'},
+        {'*','#','\\','#','\\','#','#','\\','|','\\','#','#','\\','#','\\','#','#','\\','#','\\','#','#','\\','#','#','/','#','#','/','#','|','#','\\','#','#','#','_','_','/','|','\\','#','\\','#','#','\\','|','\\','#','#','\\','#','#','#','#','#','#','#','\\','#','\\','#','#','\\','|','\\','#','#','\\','#','\\','#','#','\\','|','\\','#','#','\\','#','\\','#','#','\\','#','\\','#','#','\\','_','|','\\','#','\\','#','#','#','#','*'},
+        {'*','#','#','\\','#','\\','#','#','#','_','#','#','_','\\','#','\\','#','#','\\','#','\\','#','#','\\','/','#','#','/','#','/','#','\\','#','\\','#','#','\\','_','|','/','_','\\','#','\\','#','#','#','_','#','#','_','\\','#','#','#','#','#','#','#','\\','#','\\','#','#','#','_','#','#','_','\\','#','\\','#','#','#','_','_','#','#','\\','#','\\','#','#','\\','#','\\','#','#','\\','#','\\','\\','#','\\','#','#','#','*'},
+        {'*','#','#','#','\\','#','\\','#','#','\\','\\','#','#','\\','\\','#','\\','#','#','\\','#','\\','#','#','#','#','/','#','/','#','#','#','\\','#','\\','#','#','\\','_','|','\\','#','\\','#','\\','#','#','\\','\\','#','#','\\','|','#','#','#','#','#','#','#','\\','#','\\','#','#','\\','\\','#','#','\\','\\','#','\\','#','#','\\','#','\\','#','#','\\','#','\\','#','#','\\','#','\\','#','#','\\','_','\\','\\','#','\\','#','#','*'},
+        {'*','#','#','#','#','\\','#','\\','_','_','\\','\\','#','_','\\','\\','#','\\','_','_','\\','#','\\','_','_','/','#','/','#','#','#','#','#','\\','#','\\','_','_','_','_','_','_','_','\\','#','\\','_','_','\\','\\','#','_','\\','#','#','#','#','#','#','#','#','\\','#','\\','_','_','\\','\\','#','_','\\','\\','#','\\','_','_','\\','#','\\','_','_','\\','#','\\','_','_','\\','#','\\','_','_','_','_','_','_','_','\\','#','*'},
+        {'*','#','#','#','#','#','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','/','#','#','#','#','#','#','#','\\','|','_','_','_','_','_','_','_','|','\\','|','_','_','|','\\','|','_','_','|','#','#','#','#','#','#','#','#','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','|','\\','|','_','_','_','_','_','_','_','|','#','*'},
+        {'*','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','*'},
         {'*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*','*'},
     };
 
-    for(i=0;i<LINHAS;i++){
-        for(j=0;j<COLUNAS;j++){
+    for(i=0;i<10;i++){
+        for(j=0;j<135;j++){
             if(river_raid[i][j] == '*'){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
-            else if(river_raid[i][j] == '.'){
-                printf(ANSI_COLOR_BLACK ANSI_COLOR_BK_BLACK "%c" ANSI_COLOR_RESET, river_raid[i][j]);
+            else if(river_raid[i][j] == '#'){
+                printf(ANSI_COLOR_RED ANSI_COLOR_BK_RED "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
             else if(river_raid[i][j] == '_' || river_raid[i][j] == '|' || river_raid[i][j] == '\\' || river_raid[i][j] == '/'){
-                printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_BLACK "%c" ANSI_COLOR_RESET, river_raid[i][j]);
+                printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_RED "%c" ANSI_COLOR_RESET, river_raid[i][j]);
             }
         }
-        /*atrasar a atualizacao da tela para parecer antigo */
-        /* usleep(100000); */
+       
         printf("\n");
     }
     getchar();
@@ -470,24 +588,24 @@ void movertiro(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
                 x = j;
                 y = i;
 
-                if(x == 134){
-                    map[y][x] = '.';
+                if(x == COLUNAS-1){
+                    map[y][x] = ' ';
                 }
                 if(x >= COLUNAS || x <= 0 ){
-                    map[y][x] = '.';
+                    map[y][x] = ' ';
                 }
-                if(map[y][x+1] == '.'){
-                    map[y][x] = '.';
+                if(map[y][x+1] == ' '){
+                    map[y][x] = ' ';
                     map[y][x+1] = '>';
                 }
                 if(map[y][x+1] == 'F'){
-                    map[y][x] = '.';
-                    map[y][x+1] = '.';
+                    map[y][x] = ' ';
+                    map[y][x+1] = ' ';
                 }
                 if(map[y][x+1] == 'X'){
                     *pontos = *pontos + 50; /* adiciona 50 pontos ao destruir 'X' */
-                    map[y][x] = '.';
-                    map[y][x+1] = '.';
+                    map[y][x] = ' ';
+                    map[y][x+1] = ' ';
                 }
 
             }        
@@ -495,30 +613,139 @@ void movertiro(char map[LINHAS][COLUNAS], int *printcombustivel, int *pontos){
     }
 }
 
-/*mover F*/
-void moverfuel(char map[LINHAS][COLUNAS], int *printcombustivel){
-    int i, j=134,random, randomspawn;
+/*mover tiro do T*/
+void movertiroT(char map[LINHAS][COLUNAS]){
+    int x,y,i,j;
+    for(i=0;i<LINHAS;i++){
+        for(j=0;j<COLUNAS;j++){
+            if(map[i][j] == '<'){
+                x = j;
+                y = i;
+                if(map[y][x-2] == 'F'){
+                    map[y][x] = ' ';
+                    map[y][x-3] = '<';
+                }
+                if(map[y][x-2] == 'X'){
+                    map[y][x] = ' ';
+                    map[y][x-3] = '<';
+                }
+                if(x == COLUNAS-1){
+                    map[y][x] = ' ';
+                }
+                if(x >= COLUNAS || x <= 0 ){
+                    map[y][x] = ' ';
+                }
+                if(map[y][x-2] == ' '){
+                    map[y][x] = ' ';
+                    map[y][x-2] = '<';
+                }
+                if(map[y][x-2] == 'C'){
+                    
+                }
+            }        
+        }
+    }
+}
+
+/*mover T*/
+void moverinimigoT(char map[LINHAS][COLUNAS]){
+    int i, j=COLUNAS-1,random, randomspawn;
+    int tirosT;
     int x,y;
 
-    random = rand() % 8 + 1;
+    random = rand() % (LINHAS-2) + 1;
+    randomspawn = rand()%100 + 1;
+    if(map[random][COLUNAS-1] == ' ' && randomspawn >= (100-probT)/*97*/ && randomspawn < 100){
+        map[random][j] = 'T'; 
+    }
+    
+    for(i=0;i<LINHAS;i++){
+        for(j=0;j<COLUNAS;j++){
+            if(map[i][j] == 'T'){
+                x = j;
+                y = i;
+                
+                /* if(map[y][x-1] == ' ' && tirosT > 0){
+                    tirosT = 3;
+                    map[y][x] = ' ';
+                    map[y][x-2] = '<';
+                    tirosT--;
+                    
+                } */
+
+                if(map[y][x-1] == ' '){
+                    map[y][x] = ' ';
+                    map[y][x-1] = 'T';
+                }
+                if(map[y][x-1] == '>'){
+                    map[y][x] = ' ';
+                    map[y][x-1] = ' ';
+                }
+               /*fazer game over*/
+               if(map[y][x-1] == 'C'){
+                    map[y][x] = ' ';
+                    map[y][x-1] = 'T';
+                    jogo = 0;
+                }
+            }
+        }
+        if(map[i][0] == 'T'){
+            map[i][0] = ' ';
+        }
+    } 
+}
+
+/*mover O*/
+void moverinimigoO(char map[LINHAS][COLUNAS]){
+    int i, j=COLUNAS-1,random, randomspawn;
+    int x,y;
+
+    random = rand() % (LINHAS-2) + 1;
     randomspawn = rand()%100 + 1;
 
-    if(dificuldade == 1){
-        if(map[random][134] == '.' && randomspawn >= 70 && randomspawn < 100){
-            map[random][j] = 'F'; 
-        }
-    }
-    if(dificuldade == 2){
-        if(map[random][134] == '.' && randomspawn >= 60 && randomspawn < 100){
-            map[random][j] = 'F'; 
-        }
-    }
-    if(dificuldade == 3){
-        if(map[random][134] == '.' && randomspawn >= 50 && randomspawn < 100){
-            map[random][j] = 'F'; 
-        }
+    if(map[random][COLUNAS-1] == ' ' && randomspawn >= (100-probO)/*99*/ && randomspawn < 100){
+        map[random][j] = 'O'; 
     }
 
+    for(i=0;i<LINHAS;i++){
+        for(j=0;j<COLUNAS;j++){
+            if(map[i][j] == 'O'){
+                x = j;
+                y = i;
+
+                if(map[y][x-1] == ' '){
+                    map[y][x] = ' ';
+                    map[y][x-1] = 'O';
+                }
+                if(map[y][x-1] == '>'){
+                    map[y][x] = ' ';
+                    map[y][x-1] = ' ';
+                }
+               /*fazer game over*/
+               if(map[y][x-1] == 'C'){
+                    map[y][x] = ' ';
+                    map[y][x-1] = 'O';
+                    jogo = 0;
+                }
+            }
+        }
+        if(map[i][0] == 'O'){
+            map[i][0] = ' ';
+        }
+    } 
+}
+
+/*mover F*/
+void moverfuel(char map[LINHAS][COLUNAS], int *printcombustivel){
+    int i, j=COLUNAS-1,random, randomspawn;
+    int x,y;
+
+    random = rand() % (LINHAS-2) + 1;
+    randomspawn = rand()%100 + 1;
+
+    if(map[random][COLUNAS-1] == ' ' && randomspawn >= (100-probF)/*70*/ && randomspawn < 100){
+        map[random][j] = 'F'; 
+    }
     
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
@@ -526,17 +753,17 @@ void moverfuel(char map[LINHAS][COLUNAS], int *printcombustivel){
                 x = j;
                 y = i;
 
-                if(map[y][x-1] == '.'){
-                    map[y][x] = '.';
+                if(map[y][x-1] == ' '){
+                    map[y][x] = ' ';
                     map[y][x-1] = 'F';
                 }
                 if(map[y][x-1] == '>'){
-                    map[y][x] = '.';
-                    map[y][x-1] = '.';
+                    map[y][x] = ' ';
+                    map[y][x-1] = ' ';
                 }
                 /*pegar combustivel*/
                 if(map[y][x-1] == 'C'){
-                    map[y][x] = '.';
+                    map[y][x] = ' ';
                     map[y][x-1] = 'C';
                     *printcombustivel = *printcombustivel + 40;
                 }               
@@ -546,57 +773,48 @@ void moverfuel(char map[LINHAS][COLUNAS], int *printcombustivel){
             }
         }
         if(map[i][0] == 'F'){
-            map[i][0] = '.';
+            map[i][0] = ' ';
         }
     } 
 }
 
 /*mover X*/
-void moverinimigo(char map[LINHAS][COLUNAS]){
-    int i, j=134,random, randomspawn;
+void moverinimigoX(char map[LINHAS][COLUNAS], int *pontos){
+    int i, j=COLUNAS-1,random, randomspawn;
     int x,y;
 
-    random = rand() % 8 + 1;
+    random = rand() % (LINHAS-2) + 1;
     randomspawn = rand()%100 + 1;
-    if(dificuldade == 1){
-        if(map[random][134] == '.' && randomspawn >= 70 && randomspawn < 100){
-            map[random][j] = 'X'; 
-        }
+    
+    if(map[random][COLUNAS-1] == ' ' && randomspawn >= (100-probX)/*70*/ && randomspawn < 100){
+        map[random][j] = 'X'; 
     }
-    if(dificuldade == 2){
-        if(map[random][134] == '.' && randomspawn >= 50 && randomspawn < 100){
-            map[random][j] = 'X'; 
-        }
-    }
-    if(dificuldade == 3){
-        if(map[random][134] == '.' && randomspawn >= 30 && randomspawn < 100){
-            map[random][j] = 'X'; 
-        }
-    }
+    
     for(i=0;i<LINHAS;i++){
         for(j=0;j<COLUNAS;j++){
             if(map[i][j] == 'X'){
                 x = j;
                 y = i;
 
-                if(map[y][x-1] == '.'){
-                    map[y][x] = '.';
+                if(map[y][x-1] == ' '){
+                    map[y][x] = ' ';
                     map[y][x-1] = 'X';
                 }
                 if(map[y][x-1] == '>'){
-                    map[y][x] = '.';
-                    map[y][x-1] = '.';
+                    map[y][x] = ' ';
+                    map[y][x-1] = ' ';
+                    *pontos = *pontos + 50; /* adiciona 50 pontos ao destruir 'X' */
                 }
                /*fazer game over*/
                if(map[y][x-1] == 'C'){
-                    map[y][x] = '.';
+                    map[y][x] = ' ';
                     map[y][x-1] = 'X';
                     jogo = 0;
                 }
             }
         }
         if(map[i][0] == 'X'){
-            map[i][0] = '.';
+            map[i][0] = ' ';
         }
     } 
 }
@@ -625,7 +843,7 @@ void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pont
                 map[y][x] = 'C';
             }
             else if(map[y][x] == 'C'){
-                map[y][x] = '.';
+                map[y][x] = ' ';
                 map[y-1][x] = 'C';
             }
         }   
@@ -641,11 +859,11 @@ void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pont
                 }
             }
             /*delimitar tamanho de novo dps*/
-            if((y+1)>8){
+            if((y+1)>LINHAS-2){
                 map[y][x] = 'C';
             }
             else if(map[y][x] == 'C'){
-                map[y][x] = '.';
+                map[y][x] = ' ';
                 map[y+1][x] = 'C';
             }
         }
@@ -661,11 +879,11 @@ void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pont
                 }
             }
             
-            if((x+1)>134){
+            if((x+1)>COLUNAS-1){
                 map[y][x] = 'C';
             }
             else if(map[y][x] == 'C'){
-                map[y][x] = '.';
+                map[y][x] = ' ';
                 map[y][x+1] = 'C';
             }
         }
@@ -685,7 +903,7 @@ void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pont
                 map[y][x] = 'C';
             }
             else if(map[y][x] == 'C'){
-                map[y][x] = '.';
+                map[y][x] = ' ';
                 map[y][x-1] = 'C';
             }
         }
@@ -701,8 +919,8 @@ void moverpersonagem(char map[LINHAS][COLUNAS], int *printcombustivel, int *pont
                     }
                 }
             }
-            if((x+1)> 134){
-                map[y][x] = '.';
+            if((x+1)> COLUNAS-1){
+                map[y][x] = ' ';
             }
         }
     }
@@ -775,7 +993,7 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
                     printf(ANSI_COLOR_BLACK ANSI_COLOR_BK_BLACK "%c" ANSI_COLOR_RESET, map[i][j]);
                 }
             }
-            if(map[i][j] == '.'){
+            if(map[i][j] == ' '){
                 printf(ANSI_COLOR_WHITE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
             }
             if(map[i][j] == 'X' && j != 0){
@@ -783,6 +1001,12 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
             }
             if(map[i][j] == 'F' && j != 0){
                 printf(ANSI_COLOR_GREEN ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+            }
+            if(map[i][j] == 'O' && j != 0){
+                printf(ANSI_COLOR_YELLOW ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+            }
+            if(map[i][j] == 'T' && j != 0){
+                printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
             }
             if(map[i][j] == '>'){
                 /*alterar cor para vermelho*/
@@ -815,7 +1039,10 @@ void printarmatriz(char map[LINHAS][COLUNAS]){
                 }
                 /* printf(ANSI_COLOR_BLUE ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]); */
             }
-            if(j==134){
+            if(map[i][j] == '<'){
+                printf(ANSI_COLOR_RED ANSI_COLOR_BK_WHITE "%c" ANSI_COLOR_RESET, map[i][j]);
+            }
+            if(j==COLUNAS-1){
             }
         }
         printf("\n");
@@ -828,43 +1055,78 @@ int main(){
     int cont = 0;
     int printcombustivel = 400;
     int pontos = 0;
-
     srand(time(NULL));
-
-    char map[LINHAS][COLUNAS] = {
-       
-        {'=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'C', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'},
-        {'=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '=', '='},
-        
-    };
 
     system(CLEAR);
     welcome();
     system(CLEAR);
     gamemenu();
+
+    gridzise = fopen("gridsize.txt", "r");
+
+	if(gridzise == NULL){
+		printf("erro inesperado, nao existe arquivo o gridzise.txt\n");
+	}
+	fscanf(gridzise,"%d\n", &nlinhas);
+	fscanf(gridzise,"%d\n", &ncolunas);
+	fclose(gridzise);
+
+    LINHAS = nlinhas;
+    COLUNAS = ncolunas;
+
+    probabilidade = fopen("probabilidade.txt", "r");
+
+	if(probabilidade == NULL){
+		printf("erro inesperado, nao existe arquivo o probabilidade.txt\n");
+	}
+	fscanf(probabilidade,"%d\n", &probX);
+	fscanf(probabilidade,"%d\n", &probF);
+    fscanf(probabilidade,"%d\n", &probO);
+    fscanf(probabilidade,"%d\n", &probT);
+    fscanf(probabilidade,"%d\n", &velocidade);
+
+	fclose(probabilidade);
+
+    if(ranked_mode == 1){
+        LINHAS = 10;
+        COLUNAS = 135; 
+        probX = 25;
+        probF = 10;
+        probO = 1;
+        probT = 4;
+        velocidade = 60000;
+    }
+
+    char map[LINHAS][COLUNAS];
+
+
+    for(i=0;i<LINHAS;i++){
+        for(j=0;j<COLUNAS;j++){
+            if(i == 0 || i == LINHAS-1){
+                map[i][j] = '=';
+            }
+            else if(i == 5 && j == 0){
+                map[i][j] = 'C';
+            }
+            else{
+                map[i][j] = ' ';
+            }
+        }
+    }
+
+    
     while(jogo == 1){
         system(CLEAR);
         combustivel_pontos(&printcombustivel, &pontos);
-        moverinimigo(map);
+        moverinimigoX(map, &pontos);
+        moverinimigoO(map);
+        moverinimigoT(map);
         moverfuel(map, &printcombustivel);
         movertiro(map, &printcombustivel, &pontos);
+        movertiroT(map);
         printarmatriz(map);
-        moverpersonagem(map, &printcombustivel, &pontos);
-        
-        if(dificuldade == 1){
-            usleep(50000);
-        }
-        if(dificuldade == 2 || dificuldade == 3){
-            usleep(45000);
-        }        
+        moverpersonagem(map, &printcombustivel, &pontos); 
+        usleep(50000);
     }
     if(jogo == 0 && sair != 5){
         gameover(&pontos, &printcombustivel);

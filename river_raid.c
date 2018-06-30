@@ -99,7 +99,6 @@ int personagemcor = 1; /*cor personagem padrao*/
 int bordascor = 4; /*cor das bordas padrao*/
 int tirocor = 4; /*cor do tiro padrao*/
 int configpontos = 0; /*ativa ou desativa ganhar pontos por segundo nas configuracoes*/
-int dificuldade = 1; /*alterar a dificuldade do jogo*/
 int sair; /*definir saida do jogo*/
 int plays = 0;
 
@@ -113,13 +112,29 @@ Player jogador;
 
 void gameranking(){
     int i, escolha;
+    int size = 0;
     system(CLEAR);
+
+    game = fopen("ranking.bin","rb");
+    if (game == NULL){
+        printf("Error! opening file");
+    }
+    while(!feof(game)){
+        fread(&jogador, sizeof(Player), 1, game); 
+        size++;  
+    }
+
+    fclose(game); 
+
     game = fopen("ranking.bin","rb");
     if (game == NULL){
         printf("Error! opening file");
     }
     printf("Ranking do jogo\n");
-    for(i=0;i<10;i++){
+    
+    i=0;
+    
+    while(i=0;i<size-1;i++){
         fread(&jogador, sizeof(Player), 1, game); 
         printf("%s score : %d\n",jogador.nome, jogador.score);   
     }
@@ -215,34 +230,6 @@ void changegridzise(){
     gamemenu();
 }
 
-void jogodificuldade(){
-    system(CLEAR);
-    int escolha;
-    printf("Escolha a dificuldade do jogo\n");
-    printf("1 - Facil\n"); 
-    printf("2 - Medio\n");
-    printf("3 - Dificil\n");
-
-    printf("Escolha a dificuldade: ");
-    scanf("%d", &escolha);
-    while(escolha != 1 && escolha != 2 && escolha != 3){
-        printf("Opcao invalida, ");
-        printf("Escolha sua opcao: ");
-        scanf("%d", &escolha);
-    }
-    if(escolha == 1){
-        dificuldade = 1;
-        gamemenu();
-    }
-    if(escolha == 2){
-        dificuldade = 2;
-        gamemenu();
-    }
-    if(escolha == 3){
-        dificuldade = 3;
-        gamemenu();
-    }
-}
 /*tela de game over*/
 void gameover(int *pontos, int *printcombustivel){
     system(CLEAR);
@@ -507,12 +494,11 @@ void configuracoes(){
     printf("5 - Selecione para alterar a cor da borda do mapa\n");
     printf("6 - Selecione para alterar a cor do tiro\n");
     printf("7 - Selecione para ativar a pontuacao por segundo\n");
-    printf("8 - Selecione para alterar a dificuldade\n");
-    printf("9 - Voltar\n");
+    printf("8 - Voltar\n");
     printf("Escolha uma opcao: ");
     scanf("%d", &escolha);
     while(escolha != 1 && escolha != 2 && escolha != 3 && escolha != 4 && escolha != 5 &&
-          escolha != 6 && escolha != 7 && escolha != 8 && escolha != 9){
+          escolha != 6 && escolha != 7 && escolha != 8){
         printf("Opcao invalida, ");
         printf("Escolha sua opcao: ");
         scanf("%d", &escolha);
@@ -547,9 +533,6 @@ void configuracoes(){
         gamemenu();
     }
     if(escolha == 8){
-        jogodificuldade();
-    }
-    if(escolha == 9){
         gamemenu();
     }
 }

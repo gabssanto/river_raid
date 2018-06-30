@@ -783,11 +783,12 @@ void moverinimigoT(char map[LINHAS][COLUNAS]){
         }
     } 
 }
-
+int vidas = 3;
 /*mover O*/
-void moverinimigoO(char map[LINHAS][COLUNAS]){
+void moverinimigoO(char map[LINHAS][COLUNAS], int *pontos){
     int i, j=COLUNAS-1,random, randomspawn;
     int x,y;
+    
 
     random = rand() % (LINHAS-2) + 1;
     randomspawn = rand()%100 + 1;
@@ -806,7 +807,7 @@ void moverinimigoO(char map[LINHAS][COLUNAS]){
                     map[y][x] = ' ';
                     map[y][x-1] = 'O';
                 }
-                if(map[y][x-1] == '>'){
+                if(map[y][x-1] == '>' && vidas <= 0){
                     int a1,b1;
                     map[y][x] = ' ';
                     map[y][x-1] = ' ';
@@ -814,11 +815,19 @@ void moverinimigoO(char map[LINHAS][COLUNAS]){
                         for(b1=0;b1<COLUNAS;b1++){
                             if(map[a1][b1] == 'X'){
                                 map[a1][b1] = ' ';
+                                *pontos = *pontos + 10;
                             }
                         }
                     }
+                }
+                if(map[y][x-1] == '>' && vidas > 0){
+                    int a1,b1;
+                    map[y][x] = ' ';
+                    map[y][x-1] = 'O';
+                    vidas--;
                     
                 }
+
                /*fazer game over*/
                if(map[y][x-1] == 'C'){
                     map[y][x] = ' ';
@@ -1218,7 +1227,7 @@ int main(){
         system(CLEAR);
         combustivel_pontos(&printcombustivel, &pontos);
         moverinimigoX(map, &pontos);
-        moverinimigoO(map);
+        moverinimigoO(map, &pontos);
         moverinimigoT(map);
         moverfuel(map, &printcombustivel);
         movertiro(map, &printcombustivel, &pontos);

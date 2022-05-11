@@ -1,6 +1,8 @@
 # river_raid
 The River Raid game in C
-
+```bash
+gcc -o main river_raid.c -std=c11 -W
+```
 # Extras do jogo:
 
 1 - alterar cor do personagem.
